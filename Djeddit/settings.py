@@ -25,7 +25,10 @@ SECRET_KEY = '3ku&m78a9($p==#%(*aq_+(l3#s*w)o2@5c=_mr#w!+_3*2iua'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+LOGIN_URL = 'login/'
+LOGOUT_REDIRECT_URL = ''
 
 
 # Application definition
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Djeddit',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +58,7 @@ ROOT_URLCONF = 'Djeddit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR+'/Djeddit/html'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

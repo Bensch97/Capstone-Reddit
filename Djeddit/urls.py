@@ -19,9 +19,11 @@ from .views import *
 from .models import *
 
 admin.site.register(Subreddit)
+admin.site.register(Profile)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('create_subreddit/', views.create_subreddit_view),
-    path('signup/', views.signup_view),
+    path('create_subreddit/', create_subreddit_view),
+    path('signup/', signup_view),
+    path('', front_page_view, name='Front Page'),
 ]
