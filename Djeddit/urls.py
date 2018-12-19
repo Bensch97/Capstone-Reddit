@@ -15,7 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .views import *
+from .models import *
+
+admin.site.register(Subreddit)
+admin.site.register(Profile)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('create_subreddit/', create_subreddit_view),
+    path('signup/', signup_view),
+    path('', front_page_view, name='Front Page'),
+    path('login/', login_view),
 ]
