@@ -6,6 +6,17 @@ from .models import *
 from .forms import *
 
 
+def signup_view(request):
+    form = SignupForm(None or request.POST)
+    if form.is_valid():
+        data = form.cleaned_data
+        user = User.objects.create_user(
+            data['username'], data['email'], data['password'])
+        login(request, user)
+        return HttpResponseRedirect(reverse('profile creation'))
+    return render(request, 'signup.html', {'form': form})
+
+
 @login_required
 def create_subreddit_view(request):
     if request.method == 'POST':

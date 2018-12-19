@@ -23,4 +23,5 @@ admin.site.register(Subreddit)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('create_subreddit/', views.create_subreddit_view),
+    path('signup/', views.signup_view),
 ]
