@@ -26,4 +26,5 @@ urlpatterns = [
     path('create_subreddit/', create_subreddit_view),
     path('signup/', signup_view),
     path('', front_page_view, name='Front Page'),
+    path('login/', login_view),
 ]

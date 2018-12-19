@@ -24,6 +24,17 @@ def signup_view(request):
     return render(request, 'signup.html', {'form': form})
 
 
+def login_view(request):
+    form = LoginForm(None or request.POST)
+    if form.is_valid():
+        data = form.cleaned_data
+        user = authenticate(username=data['username'], password=data['password'])
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse('Front Page'))
+    return render(request, 'login.html', {'form': form})
+
+
 def front_page_view(request):
     return render(request, 'front_page.html')
 
