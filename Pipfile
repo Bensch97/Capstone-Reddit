@@ -8,6 +8,8 @@ name = "pypi"
 [packages]
 gunicorn = "*"
 django-heroku = "*"
+dj-database-url = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7.1"
