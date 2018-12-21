@@ -1,12 +1,14 @@
 <p>Front Page</p>
 
-<a href='/signup/'>signup</a>
+
+<a href='/signup/'>Signup</a>
+<br>
 <a href='/login/'>Login</a>
-
+<br>
 <a href='/post/'>Create Post</a>
-
-<!-- <form action="/" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form> -->
+<br>
+<a href='/explore/'>Explore</a>
+<br>
+{% if request.user.is_authenticated %}
+<a href='/create_subreddit/''>Create new subreddit</a>
+{% endif %}

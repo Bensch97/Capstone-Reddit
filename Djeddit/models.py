@@ -10,9 +10,9 @@ class Profile(models.Model):
     subscriptions = models.ManyToManyField('Subreddit', related_name='sub_subscriptions')
     moderators = models.ManyToManyField('Subreddit', related_name='mod_subscriptions')
 
- 
+
 class Subreddit(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     description = models.CharField(max_length=500)
     created_by = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -32,6 +32,3 @@ class Comment(models.Model):
     profile_id = models.ForeignKey(Profile, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     parent_id = models.IntegerField()
-
-
-    
