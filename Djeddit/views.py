@@ -13,7 +13,10 @@ def signup_view(request):
     if form.is_valid():
         data = form.cleaned_data
         user = User.objects.create_user(
-            data['username'], data['email'], data['password'])
+            data['username'], 
+            data['email'], 
+            data['password']
+        )
         Profile.objects.create(
             user = user,
             username = data['username'],
@@ -36,7 +39,25 @@ def login_view(request):
 
 
 def front_page_view(request):
-    return render(request, 'front_page.html')
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data
+            current_user_id = request.user.id
+            
+            # Post.objects.create(
+            #     content = content,
+            #     vote_count = 0,
+            #     profile_id = current_user_id,
+            #     subreddit_id = 0
+            # )
+            return HttpResponseRedirect('/thanks/')
+
+    else:
+        form = PostForm()
+
+    return render(request, 'front_page.html', {'form': form})
+
 
 
 @login_required
@@ -54,3 +75,7 @@ def create_subreddit_view(request):
     else:
         form = SubredditForm()
     return render(request, 'create_subreddit.html', {'form': form})
+
+
+def thanks_view(request):
+    return HttpResponse('Thanks')

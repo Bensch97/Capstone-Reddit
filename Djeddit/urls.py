@@ -27,4 +27,5 @@ urlpatterns = [
     path('signup/', signup_view),
     path('', front_page_view, name='Front Page'),
     path('login/', login_view),
+    path('thanks/', thanks_view)
 ]
