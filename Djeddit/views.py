@@ -14,7 +14,10 @@ def signup_view(request):
     if form.is_valid():
         data = form.cleaned_data
         user = User.objects.create_user(
-            data['username'], data['email'], data['password'])
+            data['username'], 
+            data['email'], 
+            data['password']
+        )
         Profile.objects.create(
             user=user,
             username=data['username'],
@@ -59,6 +62,29 @@ def create_subreddit_view(request):
     return render(request, 'create_subreddit.html', {'form': form})
 
 
+def thanks_view(request):
+    return HttpResponse('Thanks')
+
+def post_view(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data
+            post_to_subreddit_id = content['subreddit']
+            subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
+            print(subreddit)
+            Post.objects.create(
+                content = content['content'],
+                vote_count = 0,
+                profile_id = request.user.profile,
+                subreddit_id = subreddit
+            )
+            return HttpResponseRedirect('/thanks/')
+
+    else:
+        form = PostForm()
+
+    return render(request, 'post_page.html', {'form': form})
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
     # TODO database is allowing duplicate subreddits.This is a workaround to test if data can appear.
