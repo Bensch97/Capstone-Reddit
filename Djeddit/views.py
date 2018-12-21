@@ -43,14 +43,14 @@ def front_page_view(request):
         form = PostForm(request.POST)
         if form.is_valid():
             content = form.cleaned_data
-            current_user_id = request.user.id
+            temp_subreddit = Subreddit.objects.get(pk=1)
             
-            # Post.objects.create(
-            #     content = content,
-            #     vote_count = 0,
-            #     profile_id = current_user_id,
-            #     subreddit_id = 0
-            # )
+            Post.objects.create(
+                content = content,
+                vote_count = 0,
+                profile_id = request.user.profile,
+                subreddit_id = temp_subreddit
+            )
             return HttpResponseRedirect('/thanks/')
 
     else:
