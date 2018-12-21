@@ -39,25 +39,7 @@ def login_view(request):
 
 
 def front_page_view(request):
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            content = form.cleaned_data
-            temp_subreddit = Subreddit.objects.get(pk=1)
-            
-            Post.objects.create(
-                content = content,
-                vote_count = 0,
-                profile_id = request.user.profile,
-                subreddit_id = temp_subreddit
-            )
-            return HttpResponseRedirect('/thanks/')
-
-    else:
-        form = PostForm()
-
-    return render(request, 'front_page.html', {'form': form})
-
+    return render(request, 'front_page.html')
 
 
 @login_required
@@ -79,3 +61,24 @@ def create_subreddit_view(request):
 
 def thanks_view(request):
     return HttpResponse('Thanks')
+
+def post_view(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data
+            post_to_subreddit_id = content['subreddit']
+            subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
+            print(subreddit)
+            Post.objects.create(
+                content = content['content'],
+                vote_count = 0,
+                profile_id = request.user.profile,
+                subreddit_id = subreddit
+            )
+            return HttpResponseRedirect('/thanks/')
+
+    else:
+        form = PostForm()
+
+    return render(request, 'post_page.html', {'form': form})
