@@ -15,16 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import *
-from .models import *
 
-admin.site.register(Subreddit)
-admin.site.register(Profile)
+from Djeddit import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('create_subreddit/', create_subreddit_view),
-    path('signup/', signup_view),
-    path('', front_page_view, name='Front Page'),
-    path('login/', login_view),
+    path('create_subreddit/', views.create_subreddit_view),
+    path('signup/', views.signup_view),
+    path('', views.front_page_view, name='Front Page'),
+    path('login/', views.login_view),
+    path('r/<slug:subreddit>/', views.subreddit_view),
+    path('explore/', views.explore_view)
 ]
