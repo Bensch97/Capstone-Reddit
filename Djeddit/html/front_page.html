@@ -12,3 +12,10 @@
 {% if request.user.is_authenticated %}
 <a href='/create_subreddit/''>Create new subreddit</a>
 {% endif %}
+
+<ul>
+    {% for post in posts %}
+        <li>{{ post }}</li>
+    {% endfor %}
+</ul>
+
