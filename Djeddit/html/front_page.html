@@ -8,6 +8,7 @@
     </div>
     <div class='col'>
 
+
     </div>
 </div>
 <div class='row justify-content-end'>
@@ -19,7 +20,13 @@
     </div>
 </div>
 <div class='row'>
-    <div class='col-11 col-md-8'></div>
+    <div class='col-11 col-md-8'>
+      <ul>
+        {% for post in posts %}
+          <li>{{ post }}</li>
+        {% endfor %}
+      </ul>
+    </div>
     <div class='col-6 col-md-4 pt-5 text-right'>
         <a class='btn btn-primary mr-1 my-1' href='/post/'>Create Post</a>
         <br>

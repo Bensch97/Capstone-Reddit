@@ -41,7 +41,11 @@ def login_view(request):
 
 
 def front_page_view(request):
-    return render(request, 'front_page.html')
+    all_entries = Post.objects.all()
+    print(all_entries)
+    for post in all_entries:
+        print(post)
+    return render(request, 'front_page.html', {'posts': all_entries})
 
 
 @login_required
@@ -85,6 +89,7 @@ def post_view(request):
         form = PostForm()
 
     return render(request, 'post_page.html', {'form': form})
+
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
     # TODO database is allowing duplicate subreddits.This is a workaround to test if data can appear.
