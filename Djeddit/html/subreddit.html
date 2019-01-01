@@ -7,32 +7,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
     <script src="main.js"></script> -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
-    <h1>This is r/{{ subreddit.name }}</h1>
+    <h1 class="ml-1">This is r/{{ subreddit.name }}</h1>
     {% for post in posts %}
-    <div>
-      <ul>
-        <li>{{ post.content }}</li>
-        <li>{{ post.timestamp }}</li>
-        <li>{{ post.vote_count }}</li>
-        <li>{{ post.profile_id }}</li>
-        <li>{{ post.subreddit_id }}</li>
-      </ul>
-      <form action="/r/{{ subreddit.name }}/" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="post_id" value="{{ post.id }}" />
-        <input type="hidden" name="username" value="{{ user }}" />
-        <input type="hidden" name="upvote" value="upvote" />
-        <input type="submit" value="upvote" />
-      </form>
-      <form action="/r/{{ subreddit.name }}/" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="post_id" value="{{ post.id }}" />
-        <input type="hidden" name="username" value="{{ user }}" />
-        <input type="hidden" name="downvote" value="downvote" />
-        <input type="submit" value="downvote" />
-      </form>
+    <div class="col-11">
+      <div class="list-group">
+        <a
+          href="#"
+          class="list-group-item list-group-item-action flex-column align-items-start"
+        >
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ post.content }} - {{ post.profile_id }}</h5>
+          </div>
+          <p class="mb-1">{{ post.vote_count }} - {{ post.subreddit_id }}</p>
+          <small>{{ post.timestamp }}</small>
+        </a>
+      </div>
     </div>
     {% endfor %}
   </body>
