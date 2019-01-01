@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import F
 
 from Djeddit.models import Profile, Subreddit, Post
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
@@ -106,8 +107,15 @@ def subreddit_view(request, subreddit):
         'posts': posts
     }
     if request.method == 'POST':
-        pass
-        # TODO add functionality for upvotes/downvotes
+        print(request.POST)
+        post_id = request.POST.get('post_id')
+        targeted_post = Post.objects.get(pk=post_id)
+        if request.POST.get('upvote'):
+            targeted_post.vote_count = F('vote_count') + 1
+            targeted_post.save()
+        elif request.POST.get('downvote'):
+            targeted_post.vote_count = F('vote_count') - 1
+            targeted_post.save()
     else:
         print(data)
 

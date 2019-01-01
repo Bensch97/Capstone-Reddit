@@ -19,6 +19,20 @@
         <li>{{ post.profile_id }}</li>
         <li>{{ post.subreddit_id }}</li>
       </ul>
+      <form action="/r/{{ subreddit.name }}/" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}" />
+        <input type="hidden" name="username" value="{{ user }}" />
+        <input type="hidden" name="upvote" value="upvote" />
+        <input type="submit" value="upvote" />
+      </form>
+      <form action="/r/{{ subreddit.name }}/" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}" />
+        <input type="hidden" name="username" value="{{ user }}" />
+        <input type="hidden" name="downvote" value="downvote" />
+        <input type="submit" value="downvote" />
+      </form>
     </div>
     {% endfor %}
   </body>
