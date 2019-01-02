@@ -21,9 +21,10 @@ class PostForm(forms.Form):
     def __init__(self, subreddit=None, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         if subreddit == None:
-            print('its working')
+            print('none')
             self.fields['subreddit'].choices = [(sub.id, sub.name) for sub in Subreddit.objects.all()]
         else:
+            print('getting choices', subreddit.id, subreddit.name)
             self.fields['subreddit'].choices = [(subreddit.id, subreddit.name)]
     content = forms.CharField(max_length=500)
     subreddit = forms.ChoiceField()
