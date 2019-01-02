@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from vote.models import VoteModel
 
 from vote.models import VoteModel
 

@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -41,11 +43,17 @@ def login_view(request):
 
 
 def front_page_view(request):
-    all_entries = Post.objects.all()
-    print(all_entries)
-    for post in all_entries:
-        print(post)
-    return render(request, 'front_page.html', {'posts': all_entries})
+    all_entries = Post.objects.all().order_by('timestamp')
+    entry_content_author = []
+    for entry in all_entries:
+        user_who_posted = entry.profile_id.username
+        subreddit = entry.subreddit_id.name
+        vote_count = entry.vote_count
+
+        post_tuple = (entry.content, user_who_posted, subreddit, vote_count)
+        entry_content_author.append(post_tuple)
+
+    return render(request, 'front_page.html', {'posts': entry_content_author})
 
 
 @login_required
@@ -77,12 +85,11 @@ def post_view(request):
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
-            print(subreddit)
             Post.objects.create(
-                content=content['content'],
-                vote_count=0,
-                profile_id=request.user.profile,
-                subreddit_id=subreddit
+                content = content['content'],
+                vote_count = 0,
+                profile_id = request.user.profile,
+                subreddit_id = subreddit,
             )
             return HttpResponseRedirect('/thanks/')
 
