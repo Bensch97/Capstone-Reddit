@@ -12,6 +12,7 @@ gunicorn = "*"
 django-heroku = "*"
 dj-database-url = "*"
 python-dotenv = "*"
+django-vote = "*"
 
 [requires]
 python_version = "3.7.1"
