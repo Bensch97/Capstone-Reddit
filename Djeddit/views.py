@@ -2,10 +2,12 @@ import datetime
 
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.mail import send_mail
 
 from Djeddit.models import Profile, Subreddit, Post
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
@@ -25,6 +27,11 @@ def signup_view(request):
             username=data['username'],
             karma=0
         )
+        send_mail('Thanks for creating your account!',
+        "Thank you for registering your account {}. We hope you enjoy Djeddit!"
+        .format(data['username']),
+         settings.EMAIL_HOST_USER,
+         [data['email']], fail_silently=False)
         login(request, user)
         return HttpResponseRedirect(reverse('Front Page'))
     return render(request, 'signup.html', {'form': form})
