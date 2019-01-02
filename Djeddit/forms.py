@@ -18,9 +18,12 @@ class LoginForm(forms.Form):
 
 
 class PostForm(forms.Form):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, subreddit=None, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
-        self.fields['subreddit'].choices = [(sub.id, sub.name) for sub in Subreddit.objects.all()]
-
+        if subreddit == None:
+            print('its working')
+            self.fields['subreddit'].choices = [(sub.id, sub.name) for sub in Subreddit.objects.all()]
+        else:
+            self.fields['subreddit'].choices = [(subreddit.id, subreddit.name)]
     content = forms.CharField(max_length=500)
     subreddit = forms.ChoiceField()

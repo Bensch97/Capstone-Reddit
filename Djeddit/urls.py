@@ -22,6 +22,7 @@ from Djeddit import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('post/', views.post_view),
+    path(r'post/<slug:subreddit>/', views.post_view),
     path('create_subreddit/', views.create_subreddit_view),
     path('signup/', views.signup_view),
     path('', views.front_page_view, name='Front Page'),
