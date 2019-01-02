@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from vote.models import VoteModel
 
 
 class Profile(models.Model):
@@ -32,7 +33,7 @@ class Subreddit(models.Model):
         return self.name
 
 
-class Post(models.Model):
+class Post(VoteModel, models.Model):
     content = models.CharField(max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
     vote_count = models.IntegerField()
