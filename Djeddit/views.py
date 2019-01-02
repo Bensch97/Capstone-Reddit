@@ -47,8 +47,10 @@ def front_page_view(request):
     entry_content_author = []
     for entry in all_entries:
         user_who_posted = entry.profile_id.username
+        subreddit = entry.subreddit_id.name
+        vote_count = entry.vote_count
 
-        post_tuple = (entry.content, user_who_posted)
+        post_tuple = (entry.content, user_who_posted, subreddit, vote_count)
         entry_content_author.append(post_tuple)
 
     return render(request, 'front_page.html', {'posts': entry_content_author})

@@ -22,10 +22,12 @@
 <div class='row'>
     <div class='col-11 col-md-8'>
         
-        {% for post, author in posts %}
+        {% for post, author, subreddit, vote in posts %}
             <div class='reddit-post'>
                 <p>{{ post }}</p>
-                <p>{{ author }}</p>
+                <p>Posted By: {{ author }}</p>
+                <p>{{ subreddit }}</p>
+                <p>{{ vote }}</p>
             </div>
         {% endfor %}
       
