@@ -11,7 +11,7 @@
       <div class='row'>
         <div class='col'>
             <h2 class='mt-3 ml-2'>{{ post.vote_count }} - {{ post.content }}</h2>
-            <p class='ml-2'>Posted to r/{{ post.subreddit_id }} by {{ post.profile_id }} at {{ post.timestamp }}</p>
+            <p class='ml-2'>Posted to r/{{ post.subreddit_id }} by <a href='/u/{{ post.profile_id }}'>{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
         </div>
     </div>
         <form>
