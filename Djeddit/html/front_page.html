@@ -25,7 +25,7 @@
         {% for post, author, subreddit, vote in posts %}
             <div class='reddit-post'>
                 <p>{{ post }}</p>
-                <p>Posted By: {{ author }}</p>
+                <p>Posted By: <a href="/u/{{ author }}">{{ author }}</a></p>
                 <p>{{ subreddit }}</p>
                 <p>{{ vote }}</p>
             </div>

@@ -123,6 +123,25 @@ def subreddit_view(request, subreddit):
     return render(request, html, data)
 
 
+def profile_view(request, author):
+    html = 'user_profile.html'
+    profile_obj = Profile.objects.filter(username=author).first()
+
+    if profile_obj is not None:
+        posts = Post.objects.filter(profile_id=profile_obj)
+    else:
+        posts = None
+        return HttpResponse('u/{} does not exist yet'.format(author))
+    data = {
+        'profile': profile_obj,
+        'posts': posts
+    }
+    if request.method == 'POST':
+        pass
+        # TODO add uvote/downvote fuctionality
+    
+    return render(request, html, data)
+
 def explore_view(request):
     html = 'explore.html'
     subreddits = Subreddit.objects.all()
