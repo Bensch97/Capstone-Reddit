@@ -16,7 +16,7 @@
       <div class='list-group'>
         <div class="list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
-            <h5 class='mb-1'>{{ post.content }} - <a href='/u/{{ post.profile_id }}'>{{ post.profile_id }}</a></h5>
+            <h5 class='mb-1'><a href='/p/{{ post.id }}'>{{ post.content }}</a> - <a href='/u/{{ post.profile_id }}'>{{ post.profile_id }}</a></h5>
           </div>
           <p class='mb-1'>{{ post.vote_count }} - {{ post.subreddit_id }}</p>
           <small>{{ post.timestamp }}</small>

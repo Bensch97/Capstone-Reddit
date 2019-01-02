@@ -50,8 +50,9 @@ def front_page_view(request):
         subreddit = entry.subreddit_id.name
         vote_count = entry.vote_count
         timestamp = entry.timestamp
+        post_id = entry.id
 
-        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp)
+        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp, post_id)
         entry_content_author.append(post_tuple)
 
     return render(request, 'front_page.html', {'posts': entry_content_author})
@@ -121,6 +122,19 @@ def subreddit_view(request, subreddit):
     else:
         print(data)
 
+    return render(request, html, data)
+
+
+def individual_post_view(request, post):
+    html = 'post.html'
+    post_obj = Post.objects.filter(id=post).first()
+    data = {
+        'post': post_obj
+    }
+    if request.method == 'POST':
+        pass
+        # TODO Add voting and comment fuctionality
+    
     return render(request, html, data)
 
 
