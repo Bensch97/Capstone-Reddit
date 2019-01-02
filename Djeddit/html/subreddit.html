@@ -17,14 +17,11 @@
   <body>
     <h1 class="ml-1">This is r/{{ subreddit.name }}</h1>
     {% for post in posts %}
-    <div class="col-11">
-      <div class="list-group">
-        <a
-          href="#"
-          class="list-group-item list-group-item-action flex-column align-items-start"
-        >
+    <div class='col-11'>
+      <div class='list-group'>
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{ post.content }} - {{ post.profile_id }}</h5>
+            <h5 class='mb-1'>{{ post.content }} - <a href='/u/{{ post.profile_id }}'>{{ post.profile_id }}</a></h5>
           </div>
           <p class="mb-1">{{ post.votes.count }} - {{ post.subreddit_id }}</p>
           post.num_vote_up: {{ post.num_vote_up }} <br>
@@ -33,7 +30,7 @@
           post.vote_score: {{ post.vote_score }} <br>
           post.votes.user_ids: {{ post.votes.user_ids }}
           <small>{{ post.timestamp }}</small>
-        </a>
+        </div>
       </div>
       <form action="/r/{{ subreddit.name }}/" method="POST">
         {% csrf_token %}
