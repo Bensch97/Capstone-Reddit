@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.db.models import F
 
 from Djeddit.models import Profile, Subreddit, Post
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
@@ -95,27 +94,38 @@ def post_view(request):
 
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
+    current_user = Profile.objects.get(user__id=request.user.id)
     subreddit_obj = Subreddit.objects.get(name=subreddit)
 
     if subreddit_obj is not None:
-        posts = Post.objects.filter(subreddit_id=subreddit_obj)
+        posts = Post.objects.filter(
+            subreddit_id=subreddit_obj
+        ).order_by('-timestamp')
     else:
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
+
     data = {
         'subreddit': subreddit_obj,
         'posts': posts
     }
+
     if request.method == 'POST':
         print(request.POST)
         post_id = request.POST.get('post_id')
-        targeted_post = Post.objects.get(pk=post_id)
+        targeted_post = Post.objects.get(id=post_id)
         if request.POST.get('upvote'):
-            targeted_post.vote_count = F('vote_count') + 1
-            targeted_post.save()
+            if targeted_post.votes.exists(current_user.user.id):
+                targeted_post.votes.delete(current_user.user.id)
+            else:
+                targeted_post.votes.up(current_user.user.id)
+            # print(targeted_post.votes.user_ids())
         elif request.POST.get('downvote'):
-            targeted_post.vote_count = F('vote_count') - 1
-            targeted_post.save()
+            if targeted_post.votes.exists(current_user.user.id):
+                targeted_post.votes.delete(current_user.user.id)
+            else:
+                targeted_post.votes.down(current_user.user.id)
+            # print(targeted_post.votes.user_ids())
     else:
         print(data)
 
