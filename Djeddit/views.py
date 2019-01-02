@@ -49,8 +49,9 @@ def front_page_view(request):
         user_who_posted = entry.profile_id.username
         subreddit = entry.subreddit_id.name
         vote_count = entry.vote_count
+        timestamp = entry.timestamp
 
-        post_tuple = (entry.content, user_who_posted, subreddit, vote_count)
+        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp)
         entry_content_author.append(post_tuple)
 
     return render(request, 'front_page.html', {'posts': entry_content_author})
@@ -122,6 +123,25 @@ def subreddit_view(request, subreddit):
 
     return render(request, html, data)
 
+
+def profile_view(request, author):
+    html = 'user_profile.html'
+    profile_obj = Profile.objects.filter(username=author).first()
+
+    if profile_obj is not None:
+        posts = Post.objects.filter(profile_id=profile_obj)
+    else:
+        posts = None
+        return HttpResponse('u/{} does not exist yet'.format(author))
+    data = {
+        'profile': profile_obj,
+        'posts': posts
+    }
+    if request.method == 'POST':
+        pass
+        # TODO add uvote/downvote fuctionality
+    
+    return render(request, html, data)
 
 def explore_view(request):
     html = 'explore.html'
