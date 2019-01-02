@@ -21,11 +21,14 @@
 </div>
 <div class='row'>
     <div class='col-11 col-md-8'>
-      <ul>
-        {% for post in posts %}
-          <li>{{ post }}</li>
+        
+        {% for post, author in posts %}
+            <div class='reddit-post'>
+                <p>{{ post }}</p>
+                <p>{{ author }}</p>
+            </div>
         {% endfor %}
-      </ul>
+      
     </div>
     <div class='col-6 col-md-4 pt-5 text-right'>
         <a class='btn btn-primary mr-1 my-1' href='/post/'>Create Post</a>
