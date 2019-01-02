@@ -86,10 +86,10 @@ def post_view(request):
             post_to_subreddit_id = content['subreddit']
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
             Post.objects.create(
-                content = content['content'],
-                vote_count = 0,
-                profile_id = request.user.profile,
-                subreddit_id = subreddit,
+                content=content['content'],
+                vote_count=0,
+                profile_id=request.user.profile,
+                subreddit_id=subreddit,
             )
             return HttpResponseRedirect('/thanks/')
 
