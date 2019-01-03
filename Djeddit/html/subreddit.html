@@ -22,9 +22,13 @@
   </head>
   <body>
     <h1 class="ml-1">This is r/{{ subreddit.name }}</h1>
-    <a class="btn btn-primary mr-1 my-1" href="/post/{{ subreddit.name }}"
-      >Create Post</a
-    >
+    <a class="btn btn-primary ml-1 my-1" href="/post/{{ subreddit.name }}">Create Post</a>
+      {% if subreddit not in subscriptions %}
+        <a class='btn btn-primary ml-1 my-1' href='/subscribe/{{ subreddit.name }}/'>Subscribe</a>
+      {% endif %}
+      {% if subreddit in subscriptions %}
+      <a class='btn btn-primary ml-1 my-1' href='/unsubscribe/{{ subreddit.name }}/'>Unsubscribe</a>
+      {% endif %}
     {% for post in posts %}
     <div class="col-11">
       <div class="list-group m-1">

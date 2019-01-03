@@ -148,6 +148,8 @@ def individual_post_view(request, post):
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
     subreddit_obj = Subreddit.objects.get(name=subreddit)
+    current_user = Profile.objects.get(user=request.user)
+    subscriptions = current_user.subscriptions.all()
 
     if subreddit_obj is not None:
         posts = Post.objects.filter(
@@ -159,7 +161,8 @@ def subreddit_view(request, subreddit):
 
     data = {
         'subreddit': subreddit_obj,
-        'posts': posts
+        'posts': posts,
+        'subscriptions': subscriptions
     }
 
     if request.method == 'POST':
@@ -167,6 +170,18 @@ def subreddit_view(request, subreddit):
 
     return render(request, html, data)
 
+
+def subscription_view(request, subreddit):
+    current_user = Profile.objects.get(user=request.user)
+    sub = Subreddit.objects.get(name=subreddit)
+    current_user.subscriptions.add(sub)
+    return HttpResponseRedirect('/r/{}/'.format(subreddit))
+
+def unsubscription_view(request, subreddit):
+    current_user = Profile.objects.get(user=request.user)
+    sub = Subreddit.objects.get(name=subreddit)
+    current_user.subscriptions.remove(sub)
+    return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
 def profile_view(request, author):
     html = 'user_profile.html'
