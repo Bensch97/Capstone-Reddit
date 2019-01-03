@@ -28,28 +28,29 @@
 <div class='row'>
     <div class='col-11 col-md-8'>
         {% for post, author, subreddit, vote, vote_score, timestamp, post_id in posts %}
-            <div class='list-group'>
+            <div class='list-group m-1'>
                 <div class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class='mb-1'><a href="/r/{{ subreddit }}/ ">r/{{ subreddit }}</a> - Posted by <a href='/u/{{ author }}'>u/{{ author }}</a></h5>
-                </div>
-                <h3>{{ post }}</h3>
-                  <form style="margin-block-end: 0;" action="/" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="username" value="{{ user }}" />
-                    <input type="hidden" name="post_id" value="{{ post_id }}" />
-                    <input type="hidden" name="upvote" value="upvote" />
-                    <button type="submit"><span class="fas fa-arrow-up"></span></button>
-                  </form>
-                  <span>&nbsp;&nbsp;{{ vote_score }}</span>
-                  <form action="/" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="username" value="{{ user }}" />
-                    <input type="hidden" name="post_id" value="{{ post_id }}" />
-                    <input type="hidden" name="downvote" value="downvote" />
-                    <button type="submit"><span class="fas fa-arrow-down"></span></button>
-                  </form>
-                  <small>{{ timestamp }}</small>
+                    <div class="d-flex w-100 ">
+                        <p class='font-weight-bold'><a href='/r/{{ subreddit }}/' class='text-dark'>r/{{ subreddit }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ author }}' class='text-muted'>u/{{ author }}</a> at {{ timestamp }}</p>
+                    </div>
+                    <!-- <h5 class='mb-1 float-left'>{{ vote_score }}</h5> -->
+                    <h5 class='mb-1 ml-4'><a href='/p/{{ post_id }}' class='text-dark'>{{ post }}</a></h5>
+                    <form action="/" method="POST" style="margin-block-end: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="username" value="{{ user }}" />
+                        <input type="hidden" name="post_id" value="{{ post_id }}" />
+                        <input type="hidden" name="upvote" value="upvote" />
+                        <button type="submit"><span class="fas fa-arrow-up"></span></button>
+                      </form>
+                      &nbsp;
+                      {{ vote_score }}
+                      <form action="/" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="username" value="{{ user }}" />
+                        <input type="hidden" name="post_id" value="{{ post_id }}" />
+                        <input type="hidden" name="downvote" value="downvote" />
+                        <button type="submit"><span class="fas fa-arrow-down"></span></button>
+                      </form>
                 </div>
               </div>
         {% endfor %}

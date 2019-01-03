@@ -21,21 +21,15 @@
     />
   </head>
   <body>
-    <h1 class="ml-1">This is r/{{ subreddit.name }}</h1>
     {% for post in posts %}
-    <div class="col-11">
-      <div class="list-group">
-        <div
-          class="list-group-item list-group-item-action flex-column align-items-start"
-        >
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">
-              <a href="/r/{{ post.subreddit_id }}/">/r/{{ post.subreddit_id }}</a> -
-              Posted by <a href="/u/{{ post.profile_id }}/">u/{{ post.profile_id }}</a>
-            </h5>
+    <div class='col-11'>
+      <div class='list-group m-1'>
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 ">
+            <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
           </div>
-          <p class="mb-1">
-              <h3>{{ post.content }}</h3>
+            <h5 class='mb-1 float-left'>{{ post.calculate_vote_score }}</h5>
+            <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
             <form action="/r/{{ subreddit.name }}/" method="POST">
               {% csrf_token %}
               <input type="hidden" name="username" value="{{ user }}" />
@@ -52,11 +46,9 @@
               <input type="hidden" name="downvote" value="downvote" />
               <button type="submit"><span class="fas fa-arrow-down"></span></button>
             </form>
-          </p>
-          <small>{{ post.timestamp }}</small>
+          </div>
         </div>
       </div>
-    </div>
     {% endfor %}
   </body>
 </html>
