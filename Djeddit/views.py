@@ -9,8 +9,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.mail import send_mail
 
-from Djeddit.models import Profile, Subreddit, Post
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
+from Djeddit.models import Profile, Subreddit, Post, Comment
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
 
 
 def signup_view(request):
@@ -57,8 +57,9 @@ def front_page_view(request):
         subreddit = entry.subreddit_id.name
         vote_count = entry.vote_count
         timestamp = entry.timestamp
+        post_id = entry.id
 
-        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp)
+        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp, post_id)
         entry_content_author.append(post_tuple)
 
     return render(request, 'front_page.html', {'posts': entry_content_author})
@@ -116,6 +117,34 @@ def post_view(request, subreddit=None):
             form = PostForm(subreddit_object_for_form)
 
     return render(request, 'post_page.html', {'form': form})
+
+
+def individual_post_view(request, post):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data
+            Comment.objects.create(
+                content = comment['content'],
+                profile_id = Profile.objects.filter(user=request.user).first(),
+                post_id = Post.objects.filter(id=post).first(),
+                parent_id = 1,
+            )
+            return HttpResponseRedirect('/p/{}/'.format(post))
+
+    else:
+        form = CommentForm
+    
+    html = 'post.html'
+    post_obj = Post.objects.filter(id=post).first()
+    comments = Comment.objects.filter(post_id=post_obj)
+    print(comments)
+    data = {
+        'post': post_obj,
+        'form': form,
+        'comments': comments
+    }
+    return render(request, html, data)
 
 
 def subreddit_view(request, subreddit):

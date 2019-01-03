@@ -28,3 +28,6 @@ class PostForm(forms.Form):
             self.fields['subreddit'].choices = [(subreddit.id, subreddit.name)]
     content = forms.CharField(max_length=500)
     subreddit = forms.ChoiceField()
+
+class CommentForm(forms.Form):
+    content = forms.CharField(max_length=1000)
