@@ -178,12 +178,15 @@ def profile_view(request, author):
 
     if profile_obj is not None:
         posts = Post.objects.filter(profile_id=profile_obj)
+        comments = Comment.objects.filter(profile_id=profile_obj)
     else:
         posts = None
+        comments = None
         return HttpResponse('u/{} does not exist yet'.format(author))
     data = {
         'profile': profile_obj,
-        'posts': posts
+        'posts': posts,
+        'comments': comments
     }
     if request.method == 'POST':
         pass
