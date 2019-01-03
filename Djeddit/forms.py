@@ -24,3 +24,6 @@ class PostForm(forms.Form):
 
     content = forms.CharField(max_length=500)
     subreddit = forms.ChoiceField()
+
+class CommentForm(forms.Form):
+    content = forms.CharField(max_length=1000)

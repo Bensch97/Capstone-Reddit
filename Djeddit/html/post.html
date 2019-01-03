@@ -14,12 +14,21 @@
             <p class='ml-2'>Posted to r/{{ post.subreddit_id }} by <a href='/u/{{ post.profile_id }}'>{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
         </div>
     </div>
-        <form>
+        <form action='/p/{{ post.id }}/' method='post'>
             <div class="form-group mx-3">
                 <label for="exampleTextarea">Post Comment:</label>
-                    <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+                    {% csrf_token %}
+                    {{ form.as_p }}
                     <input class='btn btn-primary mt-1' type="submit" value="Post">
             </div>
         </form>
+    <div class='list-group'>
+        {% for comment in comments %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <p class='ml-3'><a href='/u/{{ comment.profile_id }}/'>{{ comment.profile_id }}</a> - {{ comment.timestamp }}</p>
+                <p class='ml-4'>{{comment.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
   </body>
 </html>

@@ -7,8 +7,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from Djeddit.models import Profile, Subreddit, Post
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
+from Djeddit.models import Profile, Subreddit, Post, Comment
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
 
 
 def signup_view(request):
@@ -101,6 +101,34 @@ def post_view(request):
     return render(request, 'post_page.html', {'form': form})
 
 
+def individual_post_view(request, post):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data
+            Comment.objects.create(
+                content = comment['content'],
+                profile_id = Profile.objects.filter(user=request.user).first(),
+                post_id = Post.objects.filter(id=post).first(),
+                parent_id = 1,
+            )
+            return HttpResponseRedirect('/p/{}/'.format(post))
+
+    else:
+        form = CommentForm
+    
+    html = 'post.html'
+    post_obj = Post.objects.filter(id=post).first()
+    comments = Comment.objects.filter(post_id=post_obj)
+    print(comments)
+    data = {
+        'post': post_obj,
+        'form': form,
+        'comments': comments
+    }
+    return render(request, html, data)
+
+
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
     # TODO database is allowing duplicate subreddits.This is a workaround to test if data can appear.
@@ -122,19 +150,6 @@ def subreddit_view(request, subreddit):
     else:
         print(data)
 
-    return render(request, html, data)
-
-
-def individual_post_view(request, post):
-    html = 'post.html'
-    post_obj = Post.objects.filter(id=post).first()
-    data = {
-        'post': post_obj
-    }
-    if request.method == 'POST':
-        pass
-        # TODO Add voting and comment fuctionality
-    
     return render(request, html, data)
 
 
