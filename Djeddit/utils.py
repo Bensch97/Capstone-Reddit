@@ -22,7 +22,6 @@ def handle_vote(request):
             targeted_post.votes.down(current_user_profile.user.id)
         # user has already downvoted
         elif targeted_post.votes.get(current_user_profile.user.id):
-            targeted_post.votes.up(current_user_profile.user.id)
             targeted_post.votes.delete(current_user_profile.user.id)
         # user has not voted
         else:

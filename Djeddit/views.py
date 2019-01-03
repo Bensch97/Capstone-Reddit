@@ -29,10 +29,10 @@ def signup_view(request):
             karma=0
         )
         send_mail('Thanks for creating your account!',
-        "Thank you for registering your account {}. We hope you enjoy Djeddit!"
-        .format(data['username']),
-         settings.EMAIL_HOST_USER,
-         [data['email']], fail_silently=False)
+                  "Thank you for registering your account {}. We hope you enjoy Djeddit!"
+                  .format(data['username']),
+                  settings.EMAIL_HOST_USER,
+                  [data['email']], fail_silently=False)
         login(request, user)
         return HttpResponseRedirect(reverse('Front Page'))
     return render(request, 'signup.html', {'form': form})
@@ -51,32 +51,16 @@ def login_view(request):
 
 
 def front_page_view(request):
-    all_entries = Post.objects.all().order_by('timestamp')
-    entry_content_author = []
-    for entry in all_entries:
-        user_who_posted = entry.profile_id.username
-        subreddit = entry.subreddit_id.name
-        vote_count = entry.vote_count
-        vote_score = entry.calculate_vote_score
-        timestamp = entry.timestamp
-        post_id = entry.id
+    all_entries = Post.objects.all().order_by('-vote_score')
 
-        post_tuple = (
-            entry.content,
-            user_who_posted,
-            subreddit,
-            vote_count,
-            vote_score,
-            timestamp,
-            post_id
-        )
-        # post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp, post_id)
-        entry_content_author.append(post_tuple)
+    data = {
+        'posts': all_entries
+    }
 
-        if request.method == "POST":
-            handle_vote(request)
+    if request.method == "POST":
+        handle_vote(request)
 
-    return render(request, 'front_page.html', {'posts': entry_content_author})
+    return render(request, 'front_page.html', data)
 
 
 @login_required
@@ -117,7 +101,7 @@ def post_view(request, subreddit=None):
                 subreddit_id=subreddit,
             )
             return HttpResponseRedirect('/thanks/')
-    
+
     # Perhaps we can delete this?
     else:
 
@@ -139,16 +123,16 @@ def individual_post_view(request, post):
         if form.is_valid():
             comment = form.cleaned_data
             Comment.objects.create(
-                content = comment['content'],
-                profile_id = Profile.objects.filter(user=request.user).first(),
-                post_id = Post.objects.filter(id=post).first(),
-                parent_id = 1,
+                content=comment['content'],
+                profile_id=Profile.objects.filter(user=request.user).first(),
+                post_id=Post.objects.filter(id=post).first(),
+                parent_id=1,
             )
             return HttpResponseRedirect('/p/{}/'.format(post))
 
     else:
         form = CommentForm
-    
+
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)

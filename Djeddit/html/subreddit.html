@@ -28,7 +28,6 @@
           <div class="d-flex w-100 ">
             <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
           </div>
-            <h5 class='mb-1 float-left'>{{ post.calculate_vote_score }}</h5>
             <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
             <form action="/r/{{ subreddit.name }}/" method="POST">
               {% csrf_token %}
