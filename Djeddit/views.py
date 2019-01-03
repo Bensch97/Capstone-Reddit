@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from Djeddit.models import Profile, Subreddit, Post
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
+from Djeddit.utils import handle_vote
 
 
 def signup_view(request):
@@ -49,10 +50,24 @@ def front_page_view(request):
         user_who_posted = entry.profile_id.username
         subreddit = entry.subreddit_id.name
         vote_count = entry.vote_count
+        vote_score = entry.calculate_vote_score
         timestamp = entry.timestamp
+        post_id = entry.id
 
-        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp)
+        post_tuple = (
+            entry.content,
+            user_who_posted,
+            subreddit,
+            vote_count,
+            vote_score,
+            timestamp,
+            post_id
+        )
+
         entry_content_author.append(post_tuple)
+
+        if request.method == "POST":
+            handle_vote(request)
 
     return render(request, 'front_page.html', {'posts': entry_content_author})
 
@@ -102,7 +117,6 @@ def post_view(request):
 
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
-    current_user = Profile.objects.get(user__id=request.user.id)
     subreddit_obj = Subreddit.objects.get(name=subreddit)
 
     if subreddit_obj is not None:
@@ -119,23 +133,7 @@ def subreddit_view(request, subreddit):
     }
 
     if request.method == 'POST':
-        print(request.POST)
-        post_id = request.POST.get('post_id')
-        targeted_post = Post.objects.get(id=post_id)
-        if request.POST.get('upvote'):
-            if targeted_post.votes.exists(current_user.user.id):
-                targeted_post.votes.delete(current_user.user.id)
-            else:
-                targeted_post.votes.up(current_user.user.id)
-            # print(targeted_post.votes.user_ids())
-        elif request.POST.get('downvote'):
-            if targeted_post.votes.exists(current_user.user.id):
-                targeted_post.votes.delete(current_user.user.id)
-            else:
-                targeted_post.votes.down(current_user.user.id)
-            # print(targeted_post.votes.user_ids())
-    else:
-        print(data)
+        handle_vote(request)
 
     return render(request, html, data)
 
@@ -156,8 +154,9 @@ def profile_view(request, author):
     if request.method == 'POST':
         pass
         # TODO add uvote/downvote fuctionality
-    
+
     return render(request, html, data)
+
 
 def explore_view(request):
     html = 'explore.html'
