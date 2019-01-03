@@ -13,13 +13,13 @@
     <h1 class='ml-1'>u/{{ profile.username }}</h1>
     {% for post in posts %}
     <div class='col-11'>
-        <div class='list-group'>
+        <div class='list-group m-1'>
             <div class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class='mb-1'><a href='/p/{{ post.id }}'>{{ post.content }}</a> - {{ post.profile_id }}</h5>
+                <div class="d-flex w-100 ">
+                    <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
                 </div>
-                <p class='mb-1'>{{ post.vote_count }} - {{ post.subreddit_id }}</p>
-                <small>{{ post.timestamp }}</small>
+                <h5 class='mb-1 float-left'>{{ post.vote_count }}</h5>
+                <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
             </div>
         </div>
     </div>
