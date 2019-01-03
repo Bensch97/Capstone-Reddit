@@ -17,8 +17,12 @@
         <div class="page-header">
             <nav class="navbar navbar-expand-sm navbar-light bg-light">
                 <a class="navbar-brand" href="/">Reddit</a>
-                {% block page_title %}{% endblock %}
-                {% block login_signup %}{% endblock %}
+                {% block page_title %} {% endblock %}
+                <div class='col mr-1 text-right'>
+                    <a class='btn btn-primary' href='/signup/'>Signup</a>
+                    <a class='btn btn-primary' href='/login/'>Login</a>
+                </div>
+                    
             </nav>
         </div>
 
