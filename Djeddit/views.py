@@ -86,12 +86,14 @@ def thanks_view(request):
     return HttpResponse('Thanks')
 
 
-def post_view(request):
+def post_view(request, subreddit=None):
+    print('subreddit', subreddit)
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(None, request.POST)
         if form.is_valid():
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
+            print('subreddit id', post_to_subreddit_id)
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
             Post.objects.create(
                 content = content['content'],
@@ -100,9 +102,18 @@ def post_view(request):
                 subreddit_id = subreddit,
             )
             return HttpResponseRedirect('/thanks/')
-
+    
+    # Perhaps we can delete this?
     else:
-        form = PostForm()
+
+        if subreddit == None:
+            print('none')
+            form = PostForm()
+
+        else:
+            subreddit_object_for_form = Subreddit.objects.get(name=subreddit)
+            print('subreddit for form', subreddit_object_for_form.id)
+            form = PostForm(subreddit_object_for_form)
 
     return render(request, 'post_page.html', {'form': form})
 
@@ -126,7 +137,8 @@ def subreddit_view(request, subreddit):
         pass
         # TODO add functionality for upvotes/downvotes
     else:
-        print(data)
+        pass
+        # print('data', data)
 
     return render(request, html, data)
 
