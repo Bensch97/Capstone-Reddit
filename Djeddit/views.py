@@ -2,13 +2,15 @@ import datetime
 
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.mail import send_mail
 
-from Djeddit.models import Profile, Subreddit, Post
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm
+from Djeddit.models import Profile, Subreddit, Post, Comment
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
 
 
 def signup_view(request):
@@ -25,6 +27,11 @@ def signup_view(request):
             username=data['username'],
             karma=0
         )
+        send_mail('Thanks for creating your account!',
+        "Thank you for registering your account {}. We hope you enjoy Djeddit!"
+        .format(data['username']),
+         settings.EMAIL_HOST_USER,
+         [data['email']], fail_silently=False)
         login(request, user)
         return HttpResponseRedirect(reverse('Front Page'))
     return render(request, 'signup.html', {'form': form})
@@ -50,8 +57,9 @@ def front_page_view(request):
         subreddit = entry.subreddit_id.name
         vote_count = entry.vote_count
         timestamp = entry.timestamp
+        post_id = entry.id
 
-        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp)
+        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp, post_id)
         entry_content_author.append(post_tuple)
 
     return render(request, 'front_page.html', {'posts': entry_content_author})
@@ -79,12 +87,14 @@ def thanks_view(request):
     return HttpResponse('Thanks')
 
 
-def post_view(request):
+def post_view(request, subreddit=None):
+    print('subreddit', subreddit)
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(None, request.POST)
         if form.is_valid():
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
+            print('subreddit id', post_to_subreddit_id)
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
             Post.objects.create(
                 content = content['content'],
@@ -93,11 +103,48 @@ def post_view(request):
                 subreddit_id = subreddit,
             )
             return HttpResponseRedirect('/thanks/')
-
+    
+    # Perhaps we can delete this?
     else:
-        form = PostForm()
+
+        if subreddit == None:
+            print('none')
+            form = PostForm()
+
+        else:
+            subreddit_object_for_form = Subreddit.objects.get(name=subreddit)
+            print('subreddit for form', subreddit_object_for_form.id)
+            form = PostForm(subreddit_object_for_form)
 
     return render(request, 'post_page.html', {'form': form})
+
+
+def individual_post_view(request, post):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data
+            Comment.objects.create(
+                content = comment['content'],
+                profile_id = Profile.objects.filter(user=request.user).first(),
+                post_id = Post.objects.filter(id=post).first(),
+                parent_id = 1,
+            )
+            return HttpResponseRedirect('/p/{}/'.format(post))
+
+    else:
+        form = CommentForm
+    
+    html = 'post.html'
+    post_obj = Post.objects.filter(id=post).first()
+    comments = Comment.objects.filter(post_id=post_obj)
+    print(comments)
+    data = {
+        'post': post_obj,
+        'form': form,
+        'comments': comments
+    }
+    return render(request, html, data)
 
 
 def subreddit_view(request, subreddit):
@@ -117,7 +164,8 @@ def subreddit_view(request, subreddit):
         pass
         # TODO add functionality for upvotes/downvotes
     else:
-        print(data)
+        pass
+        # print('data', data)
 
     return render(request, html, data)
 
