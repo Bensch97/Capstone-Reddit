@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
+from Djeddit.utils import handle_vote
 
 
 def signup_view(request):
@@ -18,8 +19,8 @@ def signup_view(request):
     if form.is_valid():
         data = form.cleaned_data
         user = User.objects.create_user(
-            data['username'], 
-            data['email'], 
+            data['username'],
+            data['email'],
             data['password']
         )
         Profile.objects.create(
@@ -28,10 +29,10 @@ def signup_view(request):
             karma=0
         )
         send_mail('Thanks for creating your account!',
-        "Thank you for registering your account {}. We hope you enjoy Djeddit!"
-        .format(data['username']),
-         settings.EMAIL_HOST_USER,
-         [data['email']], fail_silently=False)
+                  "Thank you for registering your account {}. We hope you enjoy Djeddit!"
+                  .format(data['username']),
+                  settings.EMAIL_HOST_USER,
+                  [data['email']], fail_silently=False)
         login(request, user)
         return HttpResponseRedirect(reverse('Front Page'))
     return render(request, 'signup.html', {'form': form})
@@ -50,19 +51,16 @@ def login_view(request):
 
 
 def front_page_view(request):
-    all_entries = Post.objects.all().order_by('timestamp')
-    entry_content_author = []
-    for entry in all_entries:
-        user_who_posted = entry.profile_id.username
-        subreddit = entry.subreddit_id.name
-        vote_count = entry.vote_count
-        timestamp = entry.timestamp
-        post_id = entry.id
+    all_entries = Post.objects.all().order_by('-vote_score')
 
-        post_tuple = (entry.content, user_who_posted, subreddit, vote_count, timestamp, post_id)
-        entry_content_author.append(post_tuple)
+    data = {
+        'posts': all_entries
+    }
 
-    return render(request, 'front_page.html', {'posts': entry_content_author})
+    if request.method == "POST":
+        handle_vote(request)
+
+    return render(request, 'front_page.html', data)
 
 
 @login_required
@@ -97,13 +95,13 @@ def post_view(request, subreddit=None):
             print('subreddit id', post_to_subreddit_id)
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
             Post.objects.create(
-                content = content['content'],
-                vote_count = 0,
-                profile_id = request.user.profile,
-                subreddit_id = subreddit,
+                content=content['content'],
+                vote_count=0,
+                profile_id=request.user.profile,
+                subreddit_id=subreddit,
             )
             return HttpResponseRedirect('/thanks/')
-    
+
     # Perhaps we can delete this?
     else:
 
@@ -125,16 +123,16 @@ def individual_post_view(request, post):
         if form.is_valid():
             comment = form.cleaned_data
             Comment.objects.create(
-                content = comment['content'],
-                profile_id = Profile.objects.filter(user=request.user).first(),
-                post_id = Post.objects.filter(id=post).first(),
-                parent_id = 1,
+                content=comment['content'],
+                profile_id=Profile.objects.filter(user=request.user).first(),
+                post_id=Post.objects.filter(id=post).first(),
+                parent_id=1,
             )
             return HttpResponseRedirect('/p/{}/'.format(post))
 
     else:
         form = CommentForm
-    
+
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)
@@ -149,25 +147,23 @@ def individual_post_view(request, post):
 
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
-    # TODO database is allowing duplicate subreddits.This is a workaround to test if data can appear.
-    # subreddit_obj = Subreddit.objects.get(name=subreddit)
-    subreddit_obj = Subreddit.objects.filter(name=subreddit).first()
+    subreddit_obj = Subreddit.objects.get(name=subreddit)
 
     if subreddit_obj is not None:
-        posts = Post.objects.filter(subreddit_id=subreddit_obj)
+        posts = Post.objects.filter(
+            subreddit_id=subreddit_obj
+        ).order_by('-timestamp')
     else:
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
+
     data = {
         'subreddit': subreddit_obj,
         'posts': posts
     }
+
     if request.method == 'POST':
-        pass
-        # TODO add functionality for upvotes/downvotes
-    else:
-        pass
-        # print('data', data)
+        handle_vote(request)
 
     return render(request, html, data)
 
@@ -188,8 +184,9 @@ def profile_view(request, author):
     if request.method == 'POST':
         pass
         # TODO add uvote/downvote fuctionality
-    
+
     return render(request, html, data)
+
 
 def explore_view(request):
     html = 'explore.html'
