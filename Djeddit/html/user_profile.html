@@ -23,6 +23,17 @@
             </div>
         </div>
     </div>
-    {% endfor %}
+        {% endfor %}
+        {% for comment in comments %}
+        <div class='col-11'>
+            <div class='list-group m-1'>
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <p>u/{{ comment.profile_id }} commented on, <a class='text-dark mb-3' href='/p/{{ comment.post_id.id }}'>{{ comment.post_id }}</a> <a class='font-weight-bold text-dark' href='/r/{{ comment.post_id.subreddit_id }}'>r/{{ comment.post_id.subreddit_id }}</a>. Posted by <a class='text-muted' href='/u/{{ comment.post_id.profile_id }}'>u/{{ comment.post_id.profile_id }}</a></p>
+                    <p class='ml-3'><a href='/u/{{ comment.profile_id }}/'>{{ comment.profile_id }}</a> - {{ comment.timestamp }}</p>
+                    <p class='ml-4'>{{comment.content }}</p>
+                </div>
+            </div>
+            </div>
+        {% endfor %}
   </body>
 </html>
