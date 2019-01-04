@@ -86,32 +86,29 @@ def thanks_view(request):
 
 
 def post_view(request, subreddit=None):
-    print('subreddit', subreddit)
     if request.method == 'POST':
         form = PostForm(None, request.POST)
         if form.is_valid():
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
-            print('subreddit id', post_to_subreddit_id)
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
+            print('subreddit_name',subreddit.name)
+            redirect_to = subreddit.name
             Post.objects.create(
                 content=content['content'],
                 vote_count=0,
                 profile_id=request.user.profile,
                 subreddit_id=subreddit,
             )
-            return HttpResponseRedirect('/thanks/')
+            return HttpResponseRedirect('/r/{}/'.format(redirect_to))
 
-    # Perhaps we can delete this?
     else:
 
         if subreddit == None:
-            print('none')
             form = PostForm()
 
         else:
             subreddit_object_for_form = Subreddit.objects.get(name=subreddit)
-            print('subreddit for form', subreddit_object_for_form.id)
             form = PostForm(subreddit_object_for_form)
 
     return render(request, 'post_page.html', {'form': form})
@@ -136,7 +133,6 @@ def individual_post_view(request, post):
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)
-    print(comments)
     data = {
         'post': post_obj,
         'form': form,
