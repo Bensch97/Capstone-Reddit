@@ -1,22 +1,19 @@
-<!DOCTYPE html>
-<html>
-  <head>
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Explore</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script> -->
-  </head>
-  <body>
+{% extends 'base.html' %}
+
+{% block page_title %}
+    <span>Explore</span>
+{% endblock %}
+
+{% block content %}
+  <div class='row'>
     <h3>Explore these subreddits:</h3>
-      <div class='col-3'>
+    <div class='col-3'>
       {% for sub in subreddits %}
       <ul class='list-group'>
         <li class='list-group-item'><a href='/r/{{sub}}'>{{ sub }}</a></li>
       </ul>
       {% endfor %}
     </div>
-  </body>
-</html>
+  </div>
+
+{% endblock %}

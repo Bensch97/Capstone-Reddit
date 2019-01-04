@@ -1,39 +1,35 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>u/{{ profile.username }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script> -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  </head>
-  <body>
-    <h1 class='ml-1'>u/{{ profile.username }}</h1>
+{% extends 'base.html' %}    
+
+{% block page_title %}
+    <span>u/{{ profile.username }}</span>
+{% endblock %}
+
+{% block content %}
+<div class='row'>
     {% for post in posts %}
-    <div class='col-11'>
-        <div class='list-group m-1'>
-            <div class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 ">
-                    <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
-                </div>
-                <h5 class='mb-1 float-left'>{{ post.vote_score }}</h5>
-                <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
-            </div>
-        </div>
-    </div>
-        {% endfor %}
-        {% for comment in comments %}
         <div class='col-11'>
             <div class='list-group m-1'>
                 <div class="list-group-item list-group-item-action flex-column align-items-start">
-                    <p>u/{{ comment.profile_id }} commented on, <a class='text-dark mb-3' href='/p/{{ comment.post_id.id }}'>{{ comment.post_id }}</a> <a class='font-weight-bold text-dark' href='/r/{{ comment.post_id.subreddit_id }}'>r/{{ comment.post_id.subreddit_id }}</a>. Posted by <a class='text-muted' href='/u/{{ comment.post_id.profile_id }}'>u/{{ comment.post_id.profile_id }}</a></p>
-                    <p class='ml-3'><a href='/u/{{ comment.profile_id }}/'>{{ comment.profile_id }}</a> - {{ comment.timestamp }}</p>
-                    <p class='ml-4'>{{comment.content }}</p>
+                    <div class="d-flex w-100 ">
+                        <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
+                    </div>
+                    <h5 class='mb-1 float-left'>{{ post.vote_score }}</h5>
+                    <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
                 </div>
             </div>
+        </div>
+    {% endfor %}
+        {% for comment in comments %}
+            <div class='col-11'>
+                <div class='list-group m-1'>
+                    <div class="list-group-item list-group-item-action flex-column align-items-start">
+                        <p>u/{{ comment.profile_id }} commented on, <a class='text-dark mb-3' href='/p/{{ comment.post_id.id }}'>{{ comment.post_id }}</a> <a class='font-weight-bold text-dark' href='/r/{{ comment.post_id.subreddit_id }}'>r/{{ comment.post_id.subreddit_id }}</a>. Posted by <a class='text-muted' href='/u/{{ comment.post_id.profile_id }}'>u/{{ comment.post_id.profile_id }}</a></p>
+                        <p class='ml-3'><a href='/u/{{ comment.profile_id }}/'>{{ comment.profile_id }}</a> - {{ comment.timestamp }}</p>
+                        <p class='ml-4'>{{comment.content }}</p>
+                    </div>
+                </div>
             </div>
         {% endfor %}
-  </body>
-</html>
+</div>
+
+{% endblock %}
