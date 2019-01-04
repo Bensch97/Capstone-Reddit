@@ -31,5 +31,7 @@ urlpatterns = [
     path('explore/', views.explore_view),
     path('thanks/', views.thanks_view),
     path('u/<slug:author>/', views.profile_view),
-    path('p/<int:post>/', views.individual_post_view)
+    path('p/<int:post>/', views.individual_post_view),
+    path('subscribe/<slug:subreddit>/', views.subscription_view),
+    path('unsubscribe/<slug:subreddit>/', views.unsubscription_view)
 ]
