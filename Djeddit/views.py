@@ -159,19 +159,25 @@ def subreddit_view(request, subreddit):
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
 
-    user_votes = {}
+    user_upvotes = {}
+    user_downvotes = {}
     for p in posts:
         if p.votes.exists(request.user.id, action=0):
-            user_votes.update({p.id: 'UP'})
+            user_upvotes.update({p.id: 'UP'})
         elif p.votes.exists(request.user.id, action=1):
-            user_votes.update({p.id: 'DOWN'})
+            user_downvotes.update({p.id: 'DOWN'})
 
     data = {
         'subreddit': subreddit_obj,
         'posts': posts,
-        'user_votes': user_votes,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
         'subscriptions': subscriptions
     }
+
+    print(data)
+    request.user.id
+    print(request.user.id, request.user.id in user_upvotes)
 
     if request.method == 'POST':
         handle_vote(request)
@@ -185,11 +191,13 @@ def subscription_view(request, subreddit):
     current_user.subscriptions.add(sub)
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
+
 def unsubscription_view(request, subreddit):
     current_user = Profile.objects.get(user=request.user)
     sub = Subreddit.objects.get(name=subreddit)
     current_user.subscriptions.remove(sub)
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
+
 
 def profile_view(request, author):
     html = 'user_profile.html'

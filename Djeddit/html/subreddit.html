@@ -55,7 +55,13 @@
             <input type="hidden" name="username" value="{{ user }}" />
             <input type="hidden" name="post_id" value="{{ post.id }}" />
             <input type="hidden" name="upvote" value="upvote" />
+            {% if post.id not in user_upvotes %}
             <button type="submit"><span class="fas fa-arrow-up"></span></button>
+            {% else %}
+            <button style="background-color: orange;" type="submit">
+              <span class="fas fa-arrow-up"></span>
+            </button>
+            {% endif %}
           </form>
           &nbsp; {{ post.calculate_vote_score }}
           <form action="/r/{{ subreddit.name }}/" method="POST">
@@ -63,9 +69,15 @@
             <input type="hidden" name="username" value="{{ user }}" />
             <input type="hidden" name="post_id" value="{{ post.id }}" />
             <input type="hidden" name="downvote" value="downvote" />
+            {% if post.id not in user_downvotes %}
             <button type="submit">
               <span class="fas fa-arrow-down"></span>
             </button>
+            {% else %}
+            <button style="background-color: orange;" type="submit">
+                <span class="fas fa-arrow-down"></span>
+            </button>
+            {% endif %}
           </form>
         </div>
       </div>
