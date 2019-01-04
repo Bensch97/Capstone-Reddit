@@ -152,14 +152,22 @@ def subreddit_view(request, subreddit):
     if subreddit_obj is not None:
         posts = Post.objects.filter(
             subreddit_id=subreddit_obj
-        ).order_by('-timestamp')
+        ).order_by('-vote_score')
     else:
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
 
+    user_votes = {}
+    for p in posts:
+        if p.votes.exists(request.user.id, action=0):
+            user_votes.update({p.id: 'UP'})
+        elif p.votes.exists(request.user.id, action=1):
+            user_votes.update({p.id: 'DOWN'})
+
     data = {
         'subreddit': subreddit_obj,
-        'posts': posts
+        'posts': posts,
+        'user_votes': user_votes
     }
 
     if request.method == 'POST':
