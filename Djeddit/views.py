@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
-from Djeddit.utils import handle_vote
+from Djeddit.utils import handle_vote, get_user_votes
 
 
 def signup_view(request):
@@ -56,7 +56,7 @@ def front_page_view(request):
     data = {
         'posts': all_entries
     }
-
+    
     if request.method == "POST":
         handle_vote(request)
 
@@ -155,13 +155,7 @@ def subreddit_view(request, subreddit):
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
 
-    user_upvotes = {}
-    user_downvotes = {}
-    for p in posts:
-        if p.votes.exists(request.user.id, action=0):
-            user_upvotes.update({p.id: 'UP'})
-        elif p.votes.exists(request.user.id, action=1):
-            user_downvotes.update({p.id: 'DOWN'})
+    user_upvotes, user_downvotes = get_user_votes(request, posts)
 
     data = {
         'subreddit': subreddit_obj,
@@ -170,13 +164,6 @@ def subreddit_view(request, subreddit):
         'user_downvotes': user_downvotes,
         'subscriptions': subscriptions
     }
-
-    print(data)
-    request.user.id
-    print(request.user.id, request.user.id in user_upvotes)
-
-    if request.method == 'POST':
-        handle_vote(request)
 
     return render(request, html, data)
 
@@ -224,15 +211,14 @@ def explore_view(request):
     data = {
         'subreddits': subreddits
     }
-
     return render(request, html, data)
 
 
 def ajax_vote(request):
     if request.POST:
         handle_vote(request)
-    post = Post.objects.get(id=request.POST.get("post_id"))
-    new_post_score = post.calculate_vote_score
+        post = Post.objects.get(id=request.POST.get("post_id"))
+        new_post_score = post.calculate_vote_score
     data = {
         "success": "success",
         "vote_type": request.POST.get("upvote"),
