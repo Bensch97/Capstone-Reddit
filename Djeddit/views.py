@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.views import generic
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
@@ -56,7 +57,7 @@ def front_page_view(request):
     data = {
         'posts': all_entries
     }
-    
+
     if request.method == "POST":
         handle_vote(request)
 
@@ -205,13 +206,12 @@ def profile_view(request, author):
     return render(request, html, data)
 
 
-def explore_view(request):
-    html = 'explore.html'
-    subreddits = Subreddit.objects.all()
-    data = {
-        'subreddits': subreddits
-    }
-    return render(request, html, data)
+class ExploreView(generic.ListView):
+    template_name = 'explore.html'
+    context_object_name = 'subreddits'
+
+    def get_queryset(self):
+        return Subreddit.objects.all()
 
 
 def ajax_vote(request):

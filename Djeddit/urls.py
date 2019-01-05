@@ -28,7 +28,7 @@ urlpatterns = [
     path('', views.front_page_view, name='Front Page'),
     path('login/', views.login_view),
     path('r/<slug:subreddit>/', views.subreddit_view),
-    path('explore/', views.explore_view),
+    path('explore/', views.ExploreView.as_view()),
     path('thanks/', views.thanks_view),
     path('u/<slug:author>/', views.profile_view),
     path('p/<int:post>/', views.individual_post_view),
