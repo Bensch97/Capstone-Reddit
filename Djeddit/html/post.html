@@ -7,7 +7,8 @@
 {% block content %}
     <div class="row">
       <div class="col">
-        <h2 class="mt-3 ml-2">{{ post.vote_score }} - {{ post.content }}</h2>
+        <h2 class="mt-3 ml-2">{{ post.content }}</h2>
+        {% include "vote.html" %}
         <p class="ml-2">
           Posted to r/{{ post.subreddit_id }} by
           <a href="/u/{{ post.profile_id }}">{{ post.profile_id }}</a> at
@@ -36,4 +37,7 @@
       {% endfor %}
     </div>
 
+{% endblock %}
+{% block javascript %}
+{% include "jquery.html" %}
 {% endblock %}

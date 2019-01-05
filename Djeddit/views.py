@@ -53,14 +53,13 @@ def login_view(request):
 
 def front_page_view(request):
     all_entries = Post.objects.all().order_by('-vote_score')
+    user_upvotes, user_downvotes = get_user_votes(request, all_entries)
 
     data = {
-        'posts': all_entries
+        'posts': all_entries,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
     }
-
-    if request.method == "POST":
-        handle_vote(request)
-
     return render(request, 'front_page.html', data)
 
 
@@ -130,14 +129,19 @@ def individual_post_view(request, post):
 
     else:
         form = CommentForm
-
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)
+    user_upvotes, user_downvotes = get_user_votes(
+        request,
+        Post.objects.filter(id=post)
+        )
     data = {
         'post': post_obj,
         'form': form,
-        'comments': comments
+        'comments': comments,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
     }
     return render(request, html, data)
 
@@ -190,18 +194,21 @@ def profile_view(request, author):
     if profile_obj is not None:
         posts = Post.objects.filter(profile_id=profile_obj)
         comments = Comment.objects.filter(profile_id=profile_obj)
+        user_upvotes, user_downvotes = get_user_votes(request, posts)
     else:
         posts = None
         comments = None
+        user_upvotes = None
+        user_downvotes = None
         return HttpResponse('u/{} does not exist yet'.format(author))
+   
     data = {
         'profile': profile_obj,
         'posts': posts,
-        'comments': comments
+        'comments': comments,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
     }
-    if request.method == 'POST':
-        pass
-        # TODO add uvote/downvote fuctionality
 
     return render(request, html, data)
 

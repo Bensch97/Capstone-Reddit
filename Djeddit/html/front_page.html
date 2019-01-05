@@ -15,22 +15,7 @@
                     </div>
                     <!-- <h5 class='mb-1 float-left'>{{ vote_score }}</h5> -->
                     <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post }}</a></h5>
-                    <form action="/" method="POST" style="margin-block-end: 0;">
-                        {% csrf_token %}
-                        <input type="hidden" name="username" value="{{ user }}" />
-                        <input type="hidden" name="post_id" value="{{ post.id }}" />
-                        <input type="hidden" name="upvote" value="upvote" />
-                        <button type="submit"><span class="fas fa-arrow-up"></span></button>
-                      </form>
-                      &nbsp;
-                      {{ post.calculate_vote_score }}
-                      <form action="/" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="username" value="{{ user }}" />
-                        <input type="hidden" name="post_id" value="{{ post.id }}" />
-                        <input type="hidden" name="downvote" value="downvote" />
-                        <button type="submit"><span class="fas fa-arrow-down"></span></button>
-                      </form>
+                    {% include "vote.html" %}
                 </div>
               </div>
         {% endfor %}
@@ -45,5 +30,8 @@
         {% endif %}
     </div>
 </div>
-
 {% endblock %}
+{% block javascript %}
+{% include "jquery.html" %}       
+{% endblock %}
+
