@@ -1,7 +1,7 @@
 import datetime
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
@@ -92,7 +92,7 @@ def post_view(request, subreddit=None):
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
-            print('subreddit_name',subreddit.name)
+            print('subreddit_name', subreddit.name)
             redirect_to = subreddit.name
             Post.objects.create(
                 content=content['content'],
@@ -226,3 +226,18 @@ def explore_view(request):
     }
 
     return render(request, html, data)
+
+
+def ajax_vote(request):
+    if request.POST:
+        handle_vote(request)
+    post = Post.objects.get(id=request.POST.get("post_id"))
+    new_post_score = post.calculate_vote_score
+    data = {
+        "success": "success",
+        "vote_type": request.POST.get("upvote"),
+        "post_id": request.POST.get("post_id"),
+        "username": request.POST.get("username"),
+        "updated_score": new_post_score
+    }
+    return JsonResponse(data)
