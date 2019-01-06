@@ -95,6 +95,7 @@ def post_view(request, subreddit=None):
             print('subreddit_name', subreddit.name)
             redirect_to = subreddit.name
             Post.objects.create(
+                title=content['title'],
                 content=content['content'],
                 vote_count=0,
                 profile_id=request.user.profile,
