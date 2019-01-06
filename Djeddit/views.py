@@ -53,12 +53,14 @@ def login_view(request):
 
 def front_page_view(request):
     all_entries = Post.objects.all().order_by('-vote_score')
-    user_upvotes, user_downvotes = get_user_votes(request, all_entries)
+    user_post_upvotes, user_post_downvotes = (
+        get_user_votes(request, all_entries)
+    )
 
     data = {
         'posts': all_entries,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
     }
     return render(request, 'front_page.html', data)
 
@@ -133,17 +135,24 @@ def individual_post_view(request, post):
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)
-    user_upvotes, user_downvotes = get_user_votes(
+    user_post_upvotes, user_post_downvotes = get_user_votes(
         request,
         Post.objects.filter(id=post)
-        )
+    )
+    user_comment_upvotes, user_comment_downvotes = get_user_votes(
+        request,
+        comments,
+    )
     data = {
         'post': post_obj,
         'form': form,
         'comments': comments,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
+        'user_comment_upvotes': user_comment_upvotes,
+        'user_comment_downvotes': user_comment_downvotes
     }
+    print(data)
     return render(request, html, data)
 
 
@@ -161,13 +170,13 @@ def subreddit_view(request, subreddit):
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
 
-    user_upvotes, user_downvotes = get_user_votes(request, posts)
+    user_post_upvotes, user_post_downvotes = get_user_votes(request, posts)
 
     data = {
         'subreddit': subreddit_obj,
         'posts': posts,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
         'subscriptions': subscriptions
     }
 
@@ -195,20 +204,20 @@ def profile_view(request, author):
     if profile_obj is not None:
         posts = Post.objects.filter(profile_id=profile_obj)
         comments = Comment.objects.filter(profile_id=profile_obj)
-        user_upvotes, user_downvotes = get_user_votes(request, posts)
+        user_post_upvotes, user_post_downvotes = get_user_votes(request, posts)
     else:
         posts = None
         comments = None
-        user_upvotes = None
-        user_downvotes = None
+        user_post_upvotes = None
+        user_post_downvotes = None
         return HttpResponse('u/{} does not exist yet'.format(author))
-   
+
     data = {
         'profile': profile_obj,
         'posts': posts,
         'comments': comments,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
     }
 
     return render(request, html, data)
@@ -225,13 +234,19 @@ class ExploreView(generic.ListView):
 def ajax_vote(request):
     if request.POST:
         handle_vote(request)
-        post = Post.objects.get(id=request.POST.get("post_id"))
-        new_post_score = post.calculate_vote_score
+        if request.POST.get("post_id"):
+            post = Post.objects.get(id=request.POST.get("post_id"))
+            updated_score = post.calculate_vote_score
+        elif request.POST.get("comment_id"):
+            comment = Comment.objects.get(id=request.POST.get("comment_id"))
+            updated_score = comment.calculate_vote_score
     data = {
         "success": "success",
         "vote_type": request.POST.get("upvote"),
-        "post_id": request.POST.get("post_id"),
+        "target_id": (request.POST.get("post_id")
+                      or request.POST.get("comment_id")),
         "username": request.POST.get("username"),
-        "updated_score": new_post_score
+        "updated_score": updated_score
     }
+    print(data)
     return JsonResponse(data)

@@ -1,9 +1,9 @@
-<form action="/ajax/vote/" method="POST" class="vote-form" style="margin-block-end: 0;">
+<form action="/ajax/vote/" method="POST" class="post-vote-form" style="margin-block-end: 0;">
     {% csrf_token %}
     <input type="hidden" name="username" value="{{ user }}" />
     <input type="hidden" name="post_id" value="{{ post.id }}" />
     <input type="hidden" name="upvote" value="upvote" />
-    {% if post.id not in user_upvotes %}
+    {% if post.id not in user_post_upvotes %}
     <button type="submit" id="up-arrow-{{post.id}}"><span class="fas fa-arrow-up"></span></button>
     {% else %}
     <button style="background-color: orange;" type="submit" id="up-arrow-{{post.id}}">
@@ -12,12 +12,12 @@
     {% endif %}
   </form>
   &nbsp; <span id="score-{{post.id}}">{{ post.calculate_vote_score }}</span> 
-  <form action="/ajax/vote/" method="POST" class="vote-form">
+  <form action="/ajax/vote/" method="POST" class="post-vote-form">
     {% csrf_token %}
     <input type="hidden" name="username" value="{{ user }}" />
     <input type="hidden" name="post_id" value="{{ post.id }}" />
     <input type="hidden" name="downvote" value="downvote" />
-    {% if post.id not in user_downvotes %}
+    {% if post.id not in user_post_downvotes %}
     <button type="submit" id="down-arrow-{{post.id}}">
       <span class="fas fa-arrow-down"></span>
     </button>
