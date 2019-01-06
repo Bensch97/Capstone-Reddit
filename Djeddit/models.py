@@ -35,6 +35,7 @@ class Subreddit(models.Model):
 
 
 class Post(VoteModel, models.Model):
+    title = models.CharField(max_length=300)
     content = models.CharField(max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
     vote_count = models.IntegerField()
