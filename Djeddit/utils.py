@@ -26,3 +26,19 @@ def handle_vote(request):
         # user has not voted
         else:
             targeted_post.votes.down(current_user_profile.user.id)
+
+
+def get_user_votes(request, posts):
+    """
+    Takes in request object and Post queryset object
+    and returns tuple of lists with post ids
+    that user has upvoted and downvoted respectively
+    """
+    user_upvotes = []
+    user_downvotes = []
+    for p in posts:
+        if p.votes.exists(request.user.id, action=0):
+            user_upvotes.append(p.id)
+        elif p.votes.exists(request.user.id, action=1):
+            user_downvotes.append(p.id)
+    return (user_upvotes, user_downvotes)
