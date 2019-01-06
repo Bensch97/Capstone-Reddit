@@ -161,6 +161,12 @@ def subreddit_view(request, subreddit):
     subreddit_obj = Subreddit.objects.get(name=subreddit)
     current_user = Profile.objects.get(user=request.user)
     subscriptions = current_user.subscriptions.all()
+    is_creator = False
+
+    print(subreddit_obj.created_by)
+    print(current_user)
+    if subreddit_obj.created_by == current_user:
+        is_creator = True
 
     if subreddit_obj is not None:
         posts = Post.objects.filter(
@@ -177,7 +183,8 @@ def subreddit_view(request, subreddit):
         'posts': posts,
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
-        'subscriptions': subscriptions
+        'subscriptions': subscriptions,
+        'is_creator': is_creator
     }
 
     return render(request, html, data)
