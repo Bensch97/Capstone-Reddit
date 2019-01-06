@@ -26,34 +26,53 @@
             </p>
             <p class="font-weight-light ml-1">
               Posted by
-              <a href="/u/{{ post.profile_id }}" class="text-muted"
-                >u/{{ post.profile_id }}</a
-              >
+              <a href="/u/{{ post.profile_id }}" class="text-muted">u/{{ post.profile_id }}</a>
               at {{ post.timestamp }}
             </p>
           </div>
           <h5 class="mb-1 ml-4">
             <a href="/p/{{ post.id }}" class="text-dark">{{ post.content }}</a>
           </h5>
-          <form action="/r/{{ subreddit.name }}/" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="username" value="{{ user }}" />
-            <input type="hidden" name="post_id" value="{{ post.id }}" />
-            <input type="hidden" name="upvote" value="upvote" />
-            <button type="submit"><span class="fas fa-arrow-up"></span></button>
-          </form>
-          &nbsp; {{ post.calculate_vote_score }}
-          <form action="/r/{{ subreddit.name }}/" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="username" value="{{ user }}" />
-            <input type="hidden" name="post_id" value="{{ post.id }}" />
-            <input type="hidden" name="downvote" value="downvote" />
-            <button type="submit">
-              <span class="fas fa-arrow-down"></span>
-            </button>
-          </form>
+          {% include "vote.html"%}
         </div>
       </div>
     </div>
     {% endfor %}
+{% endblock %}
+{% block  javascript %}
+<script>
+// jquery AJAX for voting
+$(function() {
+    var myForm = $(".vote-form")
+    myForm.submit(function() {
+      var btn = $(this).find("button")
+      var otherButton = {}
+      $.ajax({
+        url: $(this).attr('action'),
+        type: $(this).attr('method'),
+        data: $(this).serialize(),
+        }).done(function(data) {
+          // checks if upvote and assigns element to variable
+          otherButton = (data.vote_type == "upvote" ?  $(`#down-arrow-${data.post_id}`) : $(`#up-arrow-${data.post_id}`))
+          // checks if clicked button is already orange
+          switch (btn.css("background-color") == "rgb(255, 165, 0)") {
+            case true:
+              otherButton.css("background-color") == "rgb(255, 165, 0)" ? otherButton.css("background-color","") : null
+              btn.css("background-color","")
+              break;
+            case false:
+              otherButton.css("background-color") == "rgb(255, 165, 0)" ? otherButton.css("background-color","") : null
+              btn.css("background-color","orange")
+          }
+          // assign score element and update element's html from backend data
+          var score = $(`#score-${data.post_id}`)
+          score.html(data.updated_score)
+        }).fail(function(error) {
+          alert(error)
+        });
+    // ensures page does not redirect or refresh
+    return false
+    });
+});
+</script>
 {% endblock %}

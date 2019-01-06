@@ -1,17 +1,18 @@
 import datetime
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.views import generic
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
-from Djeddit.utils import handle_vote
+from Djeddit.utils import handle_vote, get_user_votes
 
 
 def signup_view(request):
@@ -52,14 +53,13 @@ def login_view(request):
 
 def front_page_view(request):
     all_entries = Post.objects.all().order_by('-vote_score')
+    user_upvotes, user_downvotes = get_user_votes(request, all_entries)
 
     data = {
-        'posts': all_entries
+        'posts': all_entries,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
     }
-
-    if request.method == "POST":
-        handle_vote(request)
-
     return render(request, 'front_page.html', data)
 
 
@@ -92,7 +92,7 @@ def post_view(request, subreddit=None):
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
-            print('subreddit_name',subreddit.name)
+            print('subreddit_name', subreddit.name)
             redirect_to = subreddit.name
             Post.objects.create(
                 content=content['content'],
@@ -129,14 +129,19 @@ def individual_post_view(request, post):
 
     else:
         form = CommentForm
-
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)
+    user_upvotes, user_downvotes = get_user_votes(
+        request,
+        Post.objects.filter(id=post)
+        )
     data = {
         'post': post_obj,
         'form': form,
-        'comments': comments
+        'comments': comments,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
     }
     return render(request, html, data)
 
@@ -150,19 +155,20 @@ def subreddit_view(request, subreddit):
     if subreddit_obj is not None:
         posts = Post.objects.filter(
             subreddit_id=subreddit_obj
-        ).order_by('-timestamp')
+        ).order_by('-vote_score')
     else:
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
 
+    user_upvotes, user_downvotes = get_user_votes(request, posts)
+
     data = {
         'subreddit': subreddit_obj,
         'posts': posts,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
         'subscriptions': subscriptions
     }
-
-    if request.method == 'POST':
-        handle_vote(request)
 
     return render(request, html, data)
 
@@ -173,11 +179,13 @@ def subscription_view(request, subreddit):
     current_user.subscriptions.add(sub)
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
+
 def unsubscription_view(request, subreddit):
     current_user = Profile.objects.get(user=request.user)
     sub = Subreddit.objects.get(name=subreddit)
     current_user.subscriptions.remove(sub)
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
+
 
 def profile_view(request, author):
     html = 'user_profile.html'
@@ -186,27 +194,43 @@ def profile_view(request, author):
     if profile_obj is not None:
         posts = Post.objects.filter(profile_id=profile_obj)
         comments = Comment.objects.filter(profile_id=profile_obj)
+        user_upvotes, user_downvotes = get_user_votes(request, posts)
     else:
         posts = None
         comments = None
+        user_upvotes = None
+        user_downvotes = None
         return HttpResponse('u/{} does not exist yet'.format(author))
+   
     data = {
         'profile': profile_obj,
         'posts': posts,
-        'comments': comments
+        'comments': comments,
+        'user_upvotes': user_upvotes,
+        'user_downvotes': user_downvotes,
     }
-    if request.method == 'POST':
-        pass
-        # TODO add uvote/downvote fuctionality
 
     return render(request, html, data)
 
 
-def explore_view(request):
-    html = 'explore.html'
-    subreddits = Subreddit.objects.all()
+class ExploreView(generic.ListView):
+    template_name = 'explore.html'
+    context_object_name = 'subreddits'
+
+    def get_queryset(self):
+        return Subreddit.objects.all()
+
+
+def ajax_vote(request):
+    if request.POST:
+        handle_vote(request)
+        post = Post.objects.get(id=request.POST.get("post_id"))
+        new_post_score = post.calculate_vote_score
     data = {
-        'subreddits': subreddits
+        "success": "success",
+        "vote_type": request.POST.get("upvote"),
+        "post_id": request.POST.get("post_id"),
+        "username": request.POST.get("username"),
+        "updated_score": new_post_score
     }
-
-    return render(request, html, data)
+    return JsonResponse(data)
