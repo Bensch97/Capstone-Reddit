@@ -3,7 +3,7 @@
     <input type="hidden" name="username" value="{{ user }}" />
     <input type="hidden" name="comment_id" value="{{ comment.id }}" />
     <input type="hidden" name="upvote" value="upvote" />
-    {% if comment.id not in user_upvotes %}
+    {% if comment.id not in user_comment_upvotes %}
     <button type="submit" id="up-arrow-{{comment.id}}"><span class="fas fa-arrow-up"></span></button>
     {% else %}
     <button style="background-color: orange;" type="submit" id="up-arrow-{{comment.id}}">
@@ -17,7 +17,7 @@
     <input type="hidden" name="username" value="{{ user }}" />
     <input type="hidden" name="comment_id" value="{{ comment.id }}" />
     <input type="hidden" name="downvote" value="downvote" />
-    {% if comment.id not in user_downvotes %}
+    {% if comment.id not in user_comment_downvotes %}
     <button type="submit" id="down-arrow-{{comment.id}}">
       <span class="fas fa-arrow-down"></span>
     </button>

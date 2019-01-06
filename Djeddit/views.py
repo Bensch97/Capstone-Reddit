@@ -57,8 +57,8 @@ def front_page_view(request):
 
     data = {
         'posts': all_entries,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_upvotes,
+        'user_post_downvotes': user_downvotes,
     }
     return render(request, 'front_page.html', data)
 
@@ -147,8 +147,8 @@ def individual_post_view(request, post):
         'comments': comments,
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
-        # 'user_comment_upvotes': user_comment_upvotes,
-        # 'user_comment_downvotes': user_comment_downvotes
+        'user_comment_upvotes': user_comment_upvotes,
+        'user_comment_downvotes': user_comment_downvotes
     }
     print(data)
     return render(request, html, data)
@@ -168,13 +168,13 @@ def subreddit_view(request, subreddit):
         posts = None
         return HttpResponse('r/{} does not exist yet'.format(subreddit))
 
-    user_upvotes, user_downvotes = get_user_votes(request, posts)
+    user_post_upvotes, user_post_downvotes = get_user_votes(request, posts)
 
     data = {
         'subreddit': subreddit_obj,
         'posts': posts,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
         'subscriptions': subscriptions
     }
 
@@ -202,20 +202,20 @@ def profile_view(request, author):
     if profile_obj is not None:
         posts = Post.objects.filter(profile_id=profile_obj)
         comments = Comment.objects.filter(profile_id=profile_obj)
-        user_upvotes, user_downvotes = get_user_votes(request, posts)
+        user_post_upvotes, user_post_downvotes = get_user_votes(request, posts)
     else:
         posts = None
         comments = None
-        user_upvotes = None
-        user_downvotes = None
+        user_post_upvotes = None
+        user_post_downvotes = None
         return HttpResponse('u/{} does not exist yet'.format(author))
 
     data = {
         'profile': profile_obj,
         'posts': posts,
         'comments': comments,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
     }
 
     return render(request, html, data)

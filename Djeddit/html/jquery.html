@@ -5,7 +5,7 @@
     var commentVoteform = $(".comment-vote-form");
     function sendVote(form) {
       form.submit(function(e) {
-        e.preventDefault()
+        e.preventDefault();
         var btn = $(this).find("button");
         var otherButton = {};
         $.ajax({
@@ -38,13 +38,14 @@
             score.html(data.updated_score);
           })
           .fail(function(error) {
-            alert(error);
+            console.log(JSON.stringify(error));
+            alert("Oops! Please login or signup.");
           });
         // ensures page does not redirect or refresh
         return false;
       });
     };
-    sendVote(postVoteform)
-    sendVote(commentVoteform)
+    sendVote(postVoteform);
+    sendVote(commentVoteform);
   });
 </script>
