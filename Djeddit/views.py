@@ -53,12 +53,14 @@ def login_view(request):
 
 def front_page_view(request):
     all_entries = Post.objects.all().order_by('-vote_score')
-    user_upvotes, user_downvotes = get_user_votes(request, all_entries)
+    user_post_upvotes, user_post_downvotes = (
+        get_user_votes(request, all_entries)
+    )
 
     data = {
         'posts': all_entries,
-        'user_post_upvotes': user_upvotes,
-        'user_post_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
     }
     return render(request, 'front_page.html', data)
 
