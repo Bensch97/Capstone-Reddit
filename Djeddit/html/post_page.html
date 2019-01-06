@@ -1,12 +1,17 @@
-<head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-</head>
-<body>
-    <form action="/post/" method="post">
-        <div class='form-group ml-1 mt-1'>
-            {% csrf_token %}
-            {{ form.as_p }}
-        </div>
-        <input class='btn btn-primary ml-1' type="submit" value="Submit">
-    </form>
-</body>
+{% extends 'base.html' %}
+
+{% block page_title %}
+    <span>Create Post</span>
+{% endblock %}
+
+{% block content %}
+
+<form action="/post/" method="post">
+    <div class='form-group ml-1 mt-1'>
+        {% csrf_token %}
+        {{ form.as_p }}
+    </div>
+    <input class='btn btn-primary ml-1' type="submit" value="Submit">
+</form>
+
+{% endblock %}

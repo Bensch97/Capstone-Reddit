@@ -8,14 +8,25 @@
 <div class='row'>
     <div class='col-11 col-md-8'>
         {% for post in posts %}
+            
             <div class='list-group m-1'>
+                
                 <div class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 ">
-                        <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id.name }}/' class='text-dark'>r/{{ post.subreddit_id.name }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id.username }}' class='text-muted'>u/{{ post.profile_id.username }}</a> at {{ post.timestamp }}</p>
-                    </div>
-                    <!-- <h5 class='mb-1 float-left'>{{ vote_score }}</h5> -->
-                    <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post }}</a></h5>
-                    {% include "vote.html" %}
+                    <div class="row">
+                        <div class="upvotes col-md-2">
+                                {% include "vote.html" %}
+                        </div>
+                        <div class="subreddit-posts col-md-10">
+                            <div class="d-flex w-100">
+                                <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id.name }}/' class='text-dark'>r/{{ post.subreddit_id.name }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id.username }}' class='text-muted'>u/{{ post.profile_id.username }}</a> at {{ post.timestamp }}</p>
+                            </div>
+                            
+                            <div class="title-post">
+                                <h5 class='mb-1'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.title }}</a></h5>
+                                <p>{{ post }}</p>
+                            </div>
+                        </div>
+                    </div>   
                 </div>
               </div>
         {% endfor %}

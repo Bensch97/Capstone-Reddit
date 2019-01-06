@@ -28,7 +28,7 @@ class PostForm(forms.Form):
             self.fields['subreddit'].choices = [(subreddit.id, subreddit.name)]
     
     title = forms.CharField(max_length=300)
-    content = forms.CharField(max_length=1000)
+    content = forms.CharField(widget=forms.Textarea)
     subreddit = forms.ChoiceField()
 
 class CommentForm(forms.Form):
