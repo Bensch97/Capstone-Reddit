@@ -132,17 +132,24 @@ def individual_post_view(request, post):
     html = 'post.html'
     post_obj = Post.objects.filter(id=post).first()
     comments = Comment.objects.filter(post_id=post_obj)
-    user_upvotes, user_downvotes = get_user_votes(
+    user_post_upvotes, user_post_downvotes = get_user_votes(
         request,
         Post.objects.filter(id=post)
-        )
+    )
+    user_comment_upvotes, user_comment_downvotes = get_user_votes(
+        request,
+        comments,
+    )
     data = {
         'post': post_obj,
         'form': form,
         'comments': comments,
-        'user_upvotes': user_upvotes,
-        'user_downvotes': user_downvotes,
+        'user_post_upvotes': user_post_upvotes,
+        'user_post_downvotes': user_post_downvotes,
+        # 'user_comment_upvotes': user_comment_upvotes,
+        # 'user_comment_downvotes': user_comment_downvotes
     }
+    print(data)
     return render(request, html, data)
 
 
@@ -201,7 +208,7 @@ def profile_view(request, author):
         user_upvotes = None
         user_downvotes = None
         return HttpResponse('u/{} does not exist yet'.format(author))
-   
+
     data = {
         'profile': profile_obj,
         'posts': posts,
@@ -224,13 +231,19 @@ class ExploreView(generic.ListView):
 def ajax_vote(request):
     if request.POST:
         handle_vote(request)
-        post = Post.objects.get(id=request.POST.get("post_id"))
-        new_post_score = post.calculate_vote_score
+        if request.POST.get("post_id"):
+            post = Post.objects.get(id=request.POST.get("post_id"))
+            updated_score = post.calculate_vote_score
+        elif request.POST.get("comment_id"):
+            comment = Comment.objects.get(id=request.POST.get("comment_id"))
+            updated_score = comment.calculate_vote_score
     data = {
         "success": "success",
         "vote_type": request.POST.get("upvote"),
-        "post_id": request.POST.get("post_id"),
+        "target_id": (request.POST.get("post_id")
+                      or request.POST.get("comment_id")),
         "username": request.POST.get("username"),
-        "updated_score": new_post_score
+        "updated_score": updated_score
     }
+    print(data)
     return JsonResponse(data)

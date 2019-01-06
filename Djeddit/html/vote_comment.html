@@ -1,0 +1,29 @@
+<form action="/ajax/vote/" method="POST" class="comment-vote-form" style="margin-block-end: 0;">
+    {% csrf_token %}
+    <input type="hidden" name="username" value="{{ user }}" />
+    <input type="hidden" name="comment_id" value="{{ comment.id }}" />
+    <input type="hidden" name="upvote" value="upvote" />
+    {% if comment.id not in user_upvotes %}
+    <button type="submit" id="up-arrow-{{comment.id}}"><span class="fas fa-arrow-up"></span></button>
+    {% else %}
+    <button style="background-color: orange;" type="submit" id="up-arrow-{{comment.id}}">
+      <span class="fas fa-arrow-up"></span>
+    </button>
+    {% endif %}
+  </form>
+  &nbsp; <span id="score-{{comment.id}}">{{ comment.calculate_vote_score }}</span> 
+  <form action="/ajax/vote/" method="POST" class="comment-vote-form">
+    {% csrf_token %}
+    <input type="hidden" name="username" value="{{ user }}" />
+    <input type="hidden" name="comment_id" value="{{ comment.id }}" />
+    <input type="hidden" name="downvote" value="downvote" />
+    {% if comment.id not in user_downvotes %}
+    <button type="submit" id="down-arrow-{{comment.id}}">
+      <span class="fas fa-arrow-down"></span>
+    </button>
+    {% else %}
+    <button style="background-color: orange;" type="submit" id="down-arrow-{{comment.id}}">
+        <span class="fas fa-arrow-down"></span>
+    </button>
+    {% endif %}
+  </form>

@@ -1,4 +1,4 @@
-from Djeddit.models import Profile, Post
+from Djeddit.models import Profile, Post, Comment
 
 
 def handle_vote(request):
@@ -6,8 +6,12 @@ def handle_vote(request):
     Takes in request obj and handles upvoting and downvoting via POST req.
     """
     current_user_profile = Profile.objects.get(user__id=request.user.id)
-    post_id = request.POST.get('post_id')
-    targeted_post = Post.objects.get(id=post_id)
+    targeted_id = request.POST.get('post_id') or request.POST.get('comment_id')
+  
+    if request.POST.get('post_id'):
+        targeted_post = Post.objects.get(id=targeted_id)
+    elif request.POST.get('comment_id'):
+        targeted_post = Comment.objects.get(id=targeted_id)
 
     if request.POST.get('upvote'):
         # user has already upvoted
