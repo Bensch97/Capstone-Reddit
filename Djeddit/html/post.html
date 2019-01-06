@@ -18,6 +18,7 @@
     </div>
     <form action="/p/{{ post.id }}/" method="post">
       <div class="form-group mx-3">
+        <label for="post-title">Post Title:</label>
         <label for="exampleTextarea">Post Comment:</label> {% csrf_token %}
         {{ form.as_p }}
         <input class="btn btn-primary mt-1" type="submit" value="Post" />
