@@ -254,11 +254,15 @@ def ajax_vote(request):
     return JsonResponse(data)
 
 def moderatoradd_view(request):
+    logged_in_profile = Profile.objects.get(username=request.user.username)
 
     if request.method == 'POST':
+        form = ModeratorForm(logged_in_profile, request.POST)
+        if form.is_valid():
+            moderator = form.cleaned_data
+            print(moderator)
         pass
     else:
-        logged_in_profile = Profile.objects.get(username=request.user.username)
         form = ModeratorForm(logged_in_profile)
 
         return render(request, 'moderator_page.html', {'form': form})
