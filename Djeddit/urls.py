@@ -34,5 +34,6 @@ urlpatterns = [
     path('p/<int:post>/', views.individual_post_view),
     path('subscribe/<slug:subreddit>/', views.subscription_view),
     path('unsubscribe/<slug:subreddit>/', views.unsubscription_view),
-    path('ajax/vote/', views.ajax_vote)
+    path('ajax/vote/', views.ajax_vote),
+    path('moderatoradd/', views.moderatoradd_view)
 ]

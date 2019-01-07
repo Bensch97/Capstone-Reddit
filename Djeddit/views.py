@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.views import generic
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm
 from Djeddit.utils import handle_vote, get_user_votes
 
 
@@ -94,7 +94,6 @@ def post_view(request, subreddit=None):
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
-            print('subreddit_name', subreddit.name)
             redirect_to = subreddit.name
             Post.objects.create(
                 title=content['title'],
@@ -152,7 +151,6 @@ def individual_post_view(request, post):
         'user_comment_upvotes': user_comment_upvotes,
         'user_comment_downvotes': user_comment_downvotes
     }
-    print(data)
     return render(request, html, data)
 
 
@@ -163,8 +161,6 @@ def subreddit_view(request, subreddit):
     subscriptions = current_user.subscriptions.all()
     is_creator = False
 
-    print(subreddit_obj.created_by)
-    print(current_user)
     if subreddit_obj.created_by == current_user:
         is_creator = True
 
@@ -255,5 +251,15 @@ def ajax_vote(request):
         "username": request.POST.get("username"),
         "updated_score": updated_score
     }
-    print(data)
     return JsonResponse(data)
+
+def moderatoradd_view(request):
+
+    if request.method == 'POST':
+        pass
+    else:
+        form = ModeratorForm()
+
+        return render(request, 'moderator_page.html', {'form': form})
+
+    return HttpResponse('thank you')
