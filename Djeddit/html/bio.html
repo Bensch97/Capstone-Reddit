@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+    <span>Tell us about yourself</span>
+{% endblock %}
+
+{% block content %}
+
+<form action="/bio/{{ user }}/" method="post">
+    <div class='form-group ml-1 mt-1'>
+        {% csrf_token %}
+        {{ form.as_p }}
+    </div>
+    <input class='btn btn-primary ml-1' type="submit" value="Submit">
+</form>
+
+{% endblock %}

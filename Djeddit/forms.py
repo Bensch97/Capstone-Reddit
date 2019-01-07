@@ -31,6 +31,7 @@ class PostForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea)
     subreddit = forms.ChoiceField()
 
+
 class CommentForm(forms.Form):
     content = forms.CharField(max_length=1000)
 
@@ -43,3 +44,6 @@ class ModeratorForm(forms.Form):
 
     subreddit = forms.ChoiceField()
     user = forms.ChoiceField()
+
+class BioForm(forms.Form):
+    bio = forms.CharField(widget=forms.Textarea)

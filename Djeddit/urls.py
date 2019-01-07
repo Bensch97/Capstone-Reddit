@@ -36,4 +36,5 @@ urlpatterns = [
     path('unsubscribe/<slug:subreddit>/', views.unsubscription_view),
     path('ajax/vote/', views.ajax_vote),
     path('moderatoradd/', views.moderatoradd_view)
+    path('bio/<slug:user>/', views.bio_view)
 ]
