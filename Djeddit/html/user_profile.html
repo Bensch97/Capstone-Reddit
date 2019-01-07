@@ -6,33 +6,32 @@
 
 {% block content %}
 <div class='row'>
-<div class='col-2 order-12'>
-        <p class='font-weight-bold'>Cake day</p>
-        <p class='font-weight-light text-muted'>{{ cakeday }}</p>
-        {% if profile.bio %}
-            <p class='font-weight-light'>{{ profile.bio }}</p>
-        {% endif %}
-        {% if profile == current_user %}
+    <div class='col-2 order-12'>
+            <p class='font-weight-bold'>Cake day</p>
+            <p class='font-weight-light text-muted'>{{ cakeday }}</p>
             {% if profile.bio %}
-                <a href='/bio/{{ current_user }}/' class='btn btn-primary mt-1'>Edit Bio</a>
+                <p class='font-weight-light'>{{ profile.bio }}</p>
             {% endif %}
-            {% if not profile.bio %}
-                <a href='/bio/{{ current_user }}/' class='btn btn-primary mt-1'>Add a Bio</a>
+            {% if profile == current_user %}
+                {% if profile.bio %}
+                    <a href='/bio/{{ current_user }}/' class='btn btn-primary mt-1'>Edit Bio</a>
+                {% endif %}
+                {% if not profile.bio %}
+                    <a href='/bio/{{ current_user }}/' class='btn btn-primary mt-1'>Add a Bio</a>
+                {% endif %}
             {% endif %}
-        {% endif %}
-</div>
-<div class='col-10 order-1'>
-    {% for post in posts %}
-        <div class='list-group m-1'>
-            <div class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 ">
-                    <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
+    </div>
+    <div class='col-10 order-1'>
+        {% for post in posts %}
+            <div class='list-group m-1'>
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 ">
+                        <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
+                    </div>
+                    <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
+                    {% include "vote.html" %}  
                 </div>
-                <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
-                {% include "vote.html" %}
-                
             </div>
-        </div>
         {% endfor %}
         {% for comment in comments %}
             <div class='list-group m-1'>
@@ -42,10 +41,8 @@
                     <p class='ml-4'>{{comment.content }}</p>
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}
     </div>
-    
-
 </div>
 
 
