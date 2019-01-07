@@ -6,32 +6,48 @@
 
 {% block content %}
 <div class='row'>
+<div class='col-2 order-12'>
+        <p class='font-weight-bold'>Cake day</p>
+        <p class='font-weight-light text-muted'>{{ cakeday }}</p>
+        {% if profile.bio %}
+            <p class='font-weight-light'>{{ profile.bio }}</p>
+        {% endif %}
+        {% if profile == current_user %}
+            {% if profile.bio %}
+                <a href='/bio/{{ current_user }}/' class='btn btn-primary mt-1'>Edit Bio</a>
+            {% endif %}
+            {% if not profile.bio %}
+                <a href='/bio/{{ current_user }}/' class='btn btn-primary mt-1'>Add a Bio</a>
+            {% endif %}
+        {% endif %}
+</div>
+<div class='col-10 order-1'>
     {% for post in posts %}
-        <div class='col-11'>
-            <div class='list-group m-1'>
-                <div class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 ">
-                        <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
-                    </div>
-                    <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
-                    {% include "vote.html" %}
-                    
+        <div class='list-group m-1'>
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 ">
+                    <p class='font-weight-bold'><a href='/r/{{ post.subreddit_id }}/' class='text-dark'>r/{{ post.subreddit_id }}</a></p><p class='font-weight-light ml-1'>Posted by <a href='/u/{{ post.profile_id }}' class='text-muted'>u/{{ post.profile_id }}</a> at {{ post.timestamp }}</p>
                 </div>
+                <h5 class='mb-1 ml-4'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.content }}</a></h5>
+                {% include "vote.html" %}
+                
             </div>
         </div>
-    {% endfor %}
+        {% endfor %}
         {% for comment in comments %}
-            <div class='col-11'>
-                <div class='list-group m-1'>
-                    <div class="list-group-item list-group-item-action flex-column align-items-start">
-                        <p>u/{{ comment.profile_id }} commented on, <a class='text-dark mb-3' href='/p/{{ comment.post_id.id }}'>{{ comment.post_id }}</a> <a class='font-weight-bold text-dark' href='/r/{{ comment.post_id.subreddit_id }}'>r/{{ comment.post_id.subreddit_id }}</a>. Posted by <a class='text-muted' href='/u/{{ comment.post_id.profile_id }}'>u/{{ comment.post_id.profile_id }}</a></p>
-                        <p class='ml-3'><a href='/u/{{ comment.profile_id }}/'>{{ comment.profile_id }}</a> - {{ comment.timestamp }}</p>
-                        <p class='ml-4'>{{comment.content }}</p>
-                    </div>
+            <div class='list-group m-1'>
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <p>u/{{ comment.profile_id }} commented on, <a class='text-dark mb-3' href='/p/{{ comment.post_id.id }}'>{{ comment.post_id }}</a> <a class='font-weight-bold text-dark' href='/r/{{ comment.post_id.subreddit_id }}'>r/{{ comment.post_id.subreddit_id }}</a>. Posted by <a class='text-muted' href='/u/{{ comment.post_id.profile_id }}'>u/{{ comment.post_id.profile_id }}</a></p>
+                    <p class='ml-3'><a href='/u/{{ comment.profile_id }}/'>{{ comment.profile_id }}</a> - {{ comment.timestamp }}</p>
+                    <p class='ml-4'>{{comment.content }}</p>
                 </div>
             </div>
-        {% endfor %}
+            {% endfor %}
+    </div>
+    
+
 </div>
+
 
 {% endblock %}
 {% block javascript %}
