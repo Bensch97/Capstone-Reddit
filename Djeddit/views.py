@@ -259,8 +259,11 @@ def moderatoradd_view(request):
     if request.method == 'POST':
         form = ModeratorForm(logged_in_profile, request.POST)
         if form.is_valid():
-            moderator = form.cleaned_data
-            print(moderator)
+            moderator_form_info = form.cleaned_data
+            new_moderator = Profile.objects.get(pk=moderator_form_info['user'])
+            subreddit_to_mod = Subreddit.objects.get(pk=moderator_form_info['subreddit'])
+            
+            subreddit_to_mod.moderators.add(new_moderator)
         pass
     else:
         form = ModeratorForm(logged_in_profile)
