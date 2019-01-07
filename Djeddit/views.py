@@ -297,10 +297,15 @@ def moderatoradd_view(request):
             moderator_form_info = form.cleaned_data
             new_moderator = Profile.objects.get(pk=moderator_form_info['user'])
             subreddit_to_mod = Subreddit.objects.get(pk=moderator_form_info['subreddit'])
-            
+            # for sub in Subreddit.objects.all():
+            #     print(sub.moderators.all())
+            for current_moderator in subreddit_to_mod.moderators.all():
+                if new_moderator == current_moderator:
+                    return HttpResponse('This user is already a duplicate')
             subreddit_to_mod.moderators.add(new_moderator)
-        pass
+
     else:
+
         form = ModeratorForm(logged_in_profile)
 
         return render(request, 'moderator_page.html', {'form': form})
