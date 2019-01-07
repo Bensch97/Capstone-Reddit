@@ -25,7 +25,7 @@ urlpatterns = [
     path(r'post/<slug:subreddit>/', views.post_view),
     path('create_subreddit/', views.create_subreddit_view),
     path('signup/', views.signup_view),
-    path('', views.front_page_view, name='Front Page'),
+    path('', views.front_page_view, name='frontpage'),
     path('login/', views.login_view),
     path('r/<slug:subreddit>/', views.subreddit_view),
     path('explore/', views.ExploreView.as_view()),
@@ -34,5 +34,6 @@ urlpatterns = [
     path('p/<int:post>/', views.individual_post_view),
     path('subscribe/<slug:subreddit>/', views.subscription_view),
     path('unsubscribe/<slug:subreddit>/', views.unsubscription_view),
-    path('ajax/vote/', views.ajax_vote)
+    path('ajax/vote/', views.ajax_vote),
+    path('logout/', views.logout_user)
 ]
