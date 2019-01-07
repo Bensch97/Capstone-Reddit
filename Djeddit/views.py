@@ -1,4 +1,6 @@
 import datetime
+import re
+import calendar
 
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -11,7 +13,7 @@ from django.core.mail import send_mail
 from django.views import generic
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, BioForm
 from Djeddit.utils import handle_vote, get_user_votes
 
 
@@ -87,9 +89,25 @@ def thanks_view(request):
     return HttpResponse('Thanks')
 
 
+def bio_view(request, user):
+    html = 'bio.html'
+    current_user = Profile.objects.get(username=user)
+    if request.method == 'POST':
+        form = BioForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data
+            current_user.bio = content['bio']
+            current_user.save()
+            print(current_user.bio)
+            return HttpResponseRedirect('/u/{}/'.format(current_user.username))
+    else:
+        form = BioForm()
+    return render(request, html, {'form': form, 'user': current_user})
+
+
 def post_view(request, subreddit=None):
     if request.method == 'POST':
-        form = PostForm(None, request.POST)
+        form = PostForm(request.POST)
         if form.is_valid():
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
@@ -117,7 +135,13 @@ def post_view(request, subreddit=None):
     return render(request, 'post_page.html', {'form': form})
 
 
+def delete_comment_view(request, post, comment):
+    Comment.objects.get(id=comment).delete()
+    return HttpResponseRedirect('/p/{}/'.format(post))
+
+
 def individual_post_view(request, post):
+    current_user = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -150,7 +174,8 @@ def individual_post_view(request, post):
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
         'user_comment_upvotes': user_comment_upvotes,
-        'user_comment_downvotes': user_comment_downvotes
+        'user_comment_downvotes': user_comment_downvotes,
+        'current_user': current_user
     }
     print(data)
     return render(request, html, data)
@@ -200,6 +225,14 @@ def unsubscription_view(request, subreddit):
 def profile_view(request, author):
     html = 'user_profile.html'
     profile_obj = Profile.objects.filter(username=author).first()
+    current_user = Profile.objects.get(user=request.user)
+    cakeday_info = re.findall(r'\d+', str(profile_obj.user.date_joined))
+    year = int(cakeday_info[0])
+    month = calendar.month_name[int(cakeday_info[1])]
+    day = cakeday_info[2]
+    if day[0] == 0:
+        day = day[1:]
+    cakeday = '{} {}, {}'.format(month, day, year)
 
     if profile_obj is not None:
         posts = Post.objects.filter(profile_id=profile_obj)
@@ -214,10 +247,12 @@ def profile_view(request, author):
 
     data = {
         'profile': profile_obj,
+        'cakeday': cakeday,
         'posts': posts,
         'comments': comments,
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
+        'current_user': current_user
     }
 
     return render(request, html, data)

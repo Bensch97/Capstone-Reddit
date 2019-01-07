@@ -22,7 +22,7 @@ from Djeddit import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('post/', views.post_view),
-    path(r'post/<slug:subreddit>/', views.post_view),
+    path('post/<slug:subreddit>/', views.post_view),
     path('create_subreddit/', views.create_subreddit_view),
     path('signup/', views.signup_view),
     path('', views.front_page_view, name='frontpage'),
@@ -35,5 +35,7 @@ urlpatterns = [
     path('subscribe/<slug:subreddit>/', views.subscription_view),
     path('unsubscribe/<slug:subreddit>/', views.unsubscription_view),
     path('ajax/vote/', views.ajax_vote),
-    path('logout/', views.logout_user)
+    path('logout/', views.logout_user),
+    path('bio/<slug:user>/', views.bio_view),
+    path('p/<int:post>/delete/<int:comment>/', views.delete_comment_view)
 ]
