@@ -33,8 +33,6 @@ class Profile(models.Model):
         return self.user.username
 
 
-
-
 class Post(VoteModel, models.Model):
     title = models.CharField(max_length=300, default='No Title')
     content = models.CharField(max_length=1000)

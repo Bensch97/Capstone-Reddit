@@ -134,7 +134,13 @@ def post_view(request, subreddit=None):
     return render(request, 'post_page.html', {'form': form})
 
 
+def delete_comment_view(request, post, comment):
+    Comment.objects.get(id=comment).delete()
+    return HttpResponseRedirect('/p/{}/'.format(post))
+
+
 def individual_post_view(request, post):
+    current_user = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -167,7 +173,8 @@ def individual_post_view(request, post):
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
         'user_comment_upvotes': user_comment_upvotes,
-        'user_comment_downvotes': user_comment_downvotes
+        'user_comment_downvotes': user_comment_downvotes,
+        'current_user': current_user
     }
     return render(request, html, data)
 

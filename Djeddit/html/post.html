@@ -35,6 +35,9 @@
         </p>
         <p class="ml-4">{{ comment.content }}</p>
         {% include "vote_comment.html" %}
+        {% if current_user == comment.profile_id %}
+          <a href='/p/{{ post.id }}/delete/{{ comment.id }}/'>Delete</a>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
