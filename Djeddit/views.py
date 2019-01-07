@@ -49,7 +49,7 @@ def login_view(request):
             username=data['username'], password=data['password'])
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse('Front Page'))
+            return HttpResponseRedirect(reverse('frontpage'))
     return render(request, 'login.html', {'form': form})
 
 
@@ -285,3 +285,8 @@ def ajax_vote(request):
     }
     print(data)
     return JsonResponse(data)
+
+
+def logout_user(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('frontpage'))
