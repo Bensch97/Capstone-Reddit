@@ -258,7 +258,8 @@ def moderatoradd_view(request):
     if request.method == 'POST':
         pass
     else:
-        form = ModeratorForm()
+        logged_in_profile = Profile.objects.get(username=request.user.username)
+        form = ModeratorForm(logged_in_profile)
 
         return render(request, 'moderator_page.html', {'form': form})
 

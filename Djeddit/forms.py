@@ -35,11 +35,13 @@ class CommentForm(forms.Form):
     content = forms.CharField(max_length=1000)
 
 class ModeratorForm(forms.Form):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(ModeratorForm, self).__init__(*args, **kwargs)
         self.fields['user'].choices = [(prof.id, prof.user) for prof in Profile.objects.all()]
-        
-        # self.fields['subreddit'].choices = [(subreddit)]
+        print('logged in user:', type(user))
+        for sub in Subreddit.objects.all():
+            print(type(sub.created_by))
+        self.fields['subreddit'].choices = [(subreddit.id, subreddit.name) for subreddit in Subreddit.objects.all() if subreddit.created_by == user]
 
     subreddit = forms.ChoiceField()
     user = forms.ChoiceField()
