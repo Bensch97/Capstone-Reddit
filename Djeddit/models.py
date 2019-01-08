@@ -4,6 +4,19 @@ from django.contrib.auth.models import User
 from vote.models import VoteModel
 
 
+class Subreddit(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    description = models.CharField(max_length=500)
+    created_by = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    moderators = models.ManyToManyField(
+        'Profile',
+        related_name='mod_subscriptions',
+        blank=True
+    )
+    def __str__(self):
+        return self.name
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=30)
@@ -14,24 +27,10 @@ class Profile(models.Model):
         related_name='sub_subscriptions',
         blank=True
     )
-    moderators = models.ManyToManyField(
-        'Subreddit',
-        related_name='mod_subscriptions',
-        blank=True
-    )
+    
 
     def __str__(self):
         return self.user.username
-
-
-class Subreddit(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True)
-    description = models.CharField(max_length=500)
-    created_by = models.ForeignKey(Profile, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
 
 
 class Post(VoteModel, models.Model):

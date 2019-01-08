@@ -1,5 +1,5 @@
 from django import forms
-from .models import Subreddit
+from .models import Subreddit, Profile
 
 class SubredditForm(forms.Form):
     name = forms.CharField(max_length=50)
@@ -35,6 +35,15 @@ class PostForm(forms.Form):
 class CommentForm(forms.Form):
     content = forms.CharField(max_length=1000)
 
+class ModeratorForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        super(ModeratorForm, self).__init__(*args, **kwargs)
+
+        self.fields['user'].choices = [(prof.id, prof.user) for prof in Profile.objects.all()]
+        self.fields['subreddit'].choices = [(subreddit.id, subreddit.name) for subreddit in Subreddit.objects.all() if subreddit.created_by == user]
+
+    subreddit = forms.ChoiceField()
+    user = forms.ChoiceField()
 
 class BioForm(forms.Form):
     bio = forms.CharField(widget=forms.Textarea)

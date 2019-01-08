@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+    <span>Add Moderator</span>
+{% endblock %}
+
+{% block content %}
+<div class='form-group ml-1 mt-1'>
+    <form action="/moderatoradd/" method="post">
+        {% csrf_token %}
+        {{ form.errors }}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        
+        <input class='btn btn-primary ml-1' type="submit" value="Submit">
+    </form>
+</div>
+
+
+{% endblock %}
