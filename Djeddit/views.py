@@ -107,7 +107,7 @@ def bio_view(request, user):
 
 def post_view(request, subreddit=None):
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(subreddit, request.POST)
         if form.is_valid():
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
@@ -125,7 +125,7 @@ def post_view(request, subreddit=None):
     else:
 
         if subreddit == None:
-            form = PostForm()
+            form = PostForm(subreddit)
 
         else:
             subreddit_object_for_form = Subreddit.objects.get(name=subreddit)
@@ -318,3 +318,7 @@ def logout_user(request):
     logout(request)
     return HttpResponseRedirect(reverse('frontpage'))
 
+def delete_sub_view(request, subreddit):
+    sub_to_delete = Subreddit.objects.get(pk=subreddit)
+    sub_to_delete.delete()
+    return HttpResponseRedirect('/')

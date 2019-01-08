@@ -38,5 +38,6 @@ urlpatterns = [
     path('moderatoradd/', views.moderatoradd_view),
     path('logout/', views.logout_user),
     path('bio/<slug:user>/', views.bio_view),
-    path('p/<int:post>/delete/<int:comment>/', views.delete_comment_view)
+    path('p/<int:post>/delete/<int:comment>/', views.delete_comment_view),
+    path('subdelete/<int:subreddit>/', views.delete_sub_view),
 ]
