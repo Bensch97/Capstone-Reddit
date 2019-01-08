@@ -182,8 +182,10 @@ def individual_post_view(request, post):
 def subreddit_view(request, subreddit):
     html = 'subreddit.html'
     subreddit_obj = Subreddit.objects.get(name=subreddit)
-    current_user = Profile.objects.get(user=request.user)
-    subscriptions = current_user.subscriptions.all()
+    current_user = (Profile.objects.get(user=request.user)
+                    if request.user.is_authenticated else None)
+    subscriptions = (current_user.subscriptions.all()
+                     if request.user.is_authenticated else None)
     is_creator = False
 
     if subreddit_obj.created_by == current_user:
@@ -297,7 +299,8 @@ def moderatoradd_view(request):
         if form.is_valid():
             moderator_form_info = form.cleaned_data
             new_moderator = Profile.objects.get(pk=moderator_form_info['user'])
-            subreddit_to_mod = Subreddit.objects.get(pk=moderator_form_info['subreddit'])
+            subreddit_to_mod = Subreddit.objects.get(
+                pk=moderator_form_info['subreddit'])
             # for sub in Subreddit.objects.all():
             #     print(sub.moderators.all())
             for current_moderator in subreddit_to_mod.moderators.all():
@@ -317,6 +320,7 @@ def moderatoradd_view(request):
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect(reverse('frontpage'))
+
 
 def delete_sub_view(request, subreddit):
     sub_to_delete = Subreddit.objects.get(pk=subreddit)
