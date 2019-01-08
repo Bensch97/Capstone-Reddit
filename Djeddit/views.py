@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.views import generic
+from django.db import IntegrityError
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm
@@ -69,21 +70,29 @@ def front_page_view(request):
 
 @login_required
 def create_subreddit_view(request):
-    if request.method == 'POST':
-        form = SubredditForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            Subreddit.objects.create(
-                name=data['name'],
-                created_at=timezone.now(),
-                description=data['description'],
-                created_by=Profile.objects.filter(user=request.user).first()
-            )
-            return HttpResponse('Successfully created a subreddit')
-    else:
-        form = SubredditForm()
-    return render(request, 'create_subreddit.html', {'form': form})
+    current_user = Profile.objects.filter(user=request.user).first()
+    try:
+        if request.method == 'POST':
+            form = SubredditForm(request.POST)
+            if form.is_valid():
+                data = form.cleaned_data
+                new_subreddit_instance = Subreddit.objects.create(
+                    name=data['name'],
+                    created_at=timezone.now(),
+                    description=data['description'],
+                    created_by=current_user
+                )
+                new_subreddit_instance.moderators.add(current_user)
 
+                return HttpResponse('Successfully created a subreddit')
+        else:
+            form = SubredditForm()
+
+        return render(request, 'create_subreddit.html', {'form': form})
+
+    except IntegrityError as e:
+        error_message = 'Subreddit has already been created'
+        return HttpResponse(error_message)
 
 def thanks_view(request):
     return HttpResponse('Thanks')
@@ -98,10 +107,11 @@ def bio_view(request, user):
             content = form.cleaned_data
             current_user.bio = content['bio']
             current_user.save()
-            print(current_user.bio)
+
             return HttpResponseRedirect('/u/{}/'.format(current_user.username))
     else:
         form = BioForm()
+    
     return render(request, html, {'form': form, 'user': current_user})
 
 
@@ -155,27 +165,27 @@ def individual_post_view(request, post):
 
     else:
         form = CommentForm
-    html = 'post.html'
-    post_obj = Post.objects.filter(id=post).first()
-    comments = Comment.objects.filter(post_id=post_obj)
-    user_post_upvotes, user_post_downvotes = get_user_votes(
-        request,
-        Post.objects.filter(id=post)
-    )
-    user_comment_upvotes, user_comment_downvotes = get_user_votes(
-        request,
-        comments,
-    )
-    data = {
-        'post': post_obj,
-        'form': form,
-        'comments': comments,
-        'user_post_upvotes': user_post_upvotes,
-        'user_post_downvotes': user_post_downvotes,
-        'user_comment_upvotes': user_comment_upvotes,
-        'user_comment_downvotes': user_comment_downvotes,
-        'current_user': current_user
-    }
+        html = 'post.html'
+        post_obj = Post.objects.filter(id=post).first()
+        comments = Comment.objects.filter(post_id=post_obj)
+        user_post_upvotes, user_post_downvotes = get_user_votes(
+            request,
+            Post.objects.filter(id=post)
+        )
+        user_comment_upvotes, user_comment_downvotes = get_user_votes(
+            request,
+            comments,
+        )
+        data = {
+            'post': post_obj,
+            'form': form,
+            'comments': comments,
+            'user_post_upvotes': user_post_upvotes,
+            'user_post_downvotes': user_post_downvotes,
+            'user_comment_upvotes': user_comment_upvotes,
+            'user_comment_downvotes': user_comment_downvotes,
+            'current_user': current_user
+        }
     return render(request, html, data)
 
 
@@ -217,6 +227,7 @@ def subscription_view(request, subreddit):
     current_user = Profile.objects.get(user=request.user)
     sub = Subreddit.objects.get(name=subreddit)
     current_user.subscriptions.add(sub)
+    
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
 
@@ -224,6 +235,7 @@ def unsubscription_view(request, subreddit):
     current_user = Profile.objects.get(user=request.user)
     sub = Subreddit.objects.get(name=subreddit)
     current_user.subscriptions.remove(sub)
+    
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
 
@@ -235,6 +247,7 @@ def profile_view(request, author):
     year = int(cakeday_info[0])
     month = calendar.month_name[int(cakeday_info[1])]
     day = cakeday_info[2]
+    
     if day[0] == 0:
         day = day[1:]
     cakeday = '{} {}, {}'.format(month, day, year)
@@ -248,6 +261,7 @@ def profile_view(request, author):
         comments = None
         user_post_upvotes = None
         user_post_downvotes = None
+        
         return HttpResponse('u/{} does not exist yet'.format(author))
 
     data = {
@@ -300,12 +314,12 @@ def moderatoradd_view(request):
             moderator_form_info = form.cleaned_data
             new_moderator = Profile.objects.get(pk=moderator_form_info['user'])
             subreddit_to_mod = Subreddit.objects.get(
-                pk=moderator_form_info['subreddit'])
-            # for sub in Subreddit.objects.all():
-            #     print(sub.moderators.all())
+                pk=moderator_form_info['subreddit']
+            )
+
             for current_moderator in subreddit_to_mod.moderators.all():
                 if new_moderator == current_moderator:
-                    return HttpResponse('This user is already a duplicate')
+                    return HttpResponse('This user is already a moderator')
             subreddit_to_mod.moderators.add(new_moderator)
 
     else:
