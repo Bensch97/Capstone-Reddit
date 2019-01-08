@@ -69,19 +69,24 @@ def front_page_view(request):
 
 @login_required
 def create_subreddit_view(request):
+    current_user = Profile.objects.filter(user=request.user).first()
+    
     if request.method == 'POST':
         form = SubredditForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            Subreddit.objects.create(
+            new_subreddit_instance = Subreddit.objects.create(
                 name=data['name'],
                 created_at=timezone.now(),
                 description=data['description'],
-                created_by=Profile.objects.filter(user=request.user).first()
+                created_by=current_user
             )
+            new_subreddit_instance.moderators.add(current_user)
+
             return HttpResponse('Successfully created a subreddit')
     else:
         form = SubredditForm()
+
     return render(request, 'create_subreddit.html', {'form': form})
 
 
@@ -98,10 +103,11 @@ def bio_view(request, user):
             content = form.cleaned_data
             current_user.bio = content['bio']
             current_user.save()
-            print(current_user.bio)
+
             return HttpResponseRedirect('/u/{}/'.format(current_user.username))
     else:
         form = BioForm()
+    
     return render(request, html, {'form': form, 'user': current_user})
 
 
@@ -301,8 +307,7 @@ def moderatoradd_view(request):
             new_moderator = Profile.objects.get(pk=moderator_form_info['user'])
             subreddit_to_mod = Subreddit.objects.get(
                 pk=moderator_form_info['subreddit'])
-            # for sub in Subreddit.objects.all():
-            #     print(sub.moderators.all())
+
             for current_moderator in subreddit_to_mod.moderators.all():
                 if new_moderator == current_moderator:
                     return HttpResponse('This user is already a duplicate')
