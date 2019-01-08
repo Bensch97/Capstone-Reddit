@@ -40,6 +40,10 @@
       </div>
     </div>
     {% endfor %}
+    {% if is_creator %}
+      <a class='btn btn-danger ml-1 my-1' href='/subdelete/{{subreddit.id}}/'>Delete Subreddit</a>
+    {% endif %}
+
 {% endblock %}
 {% block  javascript %}
 {%  include "jquery.html" %}

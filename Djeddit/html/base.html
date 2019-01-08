@@ -27,7 +27,7 @@
         {% block page_title %}
         {% endblock %}
         <div class="col mr-1 text-right">
-          {% if not request.user %}
+          {% if not request.user.is_authenticated %}
           <a class="btn btn-primary" href="/signup/">Signup</a>
           <a class="btn btn-primary" href="/login/">Login</a>
           {% endif %}
