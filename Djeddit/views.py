@@ -37,7 +37,7 @@ def signup_view(request):
                   settings.EMAIL_HOST_USER,
                   [data['email']], fail_silently=False)
         login(request, user)
-        return HttpResponseRedirect(reverse('Front Page'))
+        return HttpResponseRedirect(reverse('frontpage'))
     return render(request, 'signup.html', {'form': form})
 
 
