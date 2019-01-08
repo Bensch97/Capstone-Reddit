@@ -13,7 +13,7 @@ from django.core.mail import send_mail
 from django.views import generic
 
 from Djeddit.models import Profile, Subreddit, Post, Comment
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, BioForm
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm
 from Djeddit.utils import handle_vote, get_user_votes
 
 
@@ -112,7 +112,6 @@ def post_view(request, subreddit=None):
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
             subreddit = Subreddit.objects.get(pk=post_to_subreddit_id)
-            print('subreddit_name', subreddit.name)
             redirect_to = subreddit.name
             Post.objects.create(
                 title=content['title'],
@@ -177,7 +176,6 @@ def individual_post_view(request, post):
         'user_comment_downvotes': user_comment_downvotes,
         'current_user': current_user
     }
-    print(data)
     return render(request, html, data)
 
 
@@ -186,6 +184,10 @@ def subreddit_view(request, subreddit):
     subreddit_obj = Subreddit.objects.get(name=subreddit)
     current_user = Profile.objects.get(user=request.user)
     subscriptions = current_user.subscriptions.all()
+    is_creator = False
+
+    if subreddit_obj.created_by == current_user:
+        is_creator = True
 
     if subreddit_obj is not None:
         posts = Post.objects.filter(
@@ -202,7 +204,8 @@ def subreddit_view(request, subreddit):
         'posts': posts,
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
-        'subscriptions': subscriptions
+        'subscriptions': subscriptions,
+        'is_creator': is_creator
     }
 
     return render(request, html, data)
@@ -283,10 +286,35 @@ def ajax_vote(request):
         "username": request.POST.get("username"),
         "updated_score": updated_score
     }
-    print(data)
     return JsonResponse(data)
+
+
+def moderatoradd_view(request):
+    logged_in_profile = Profile.objects.get(username=request.user.username)
+
+    if request.method == 'POST':
+        form = ModeratorForm(logged_in_profile, request.POST)
+        if form.is_valid():
+            moderator_form_info = form.cleaned_data
+            new_moderator = Profile.objects.get(pk=moderator_form_info['user'])
+            subreddit_to_mod = Subreddit.objects.get(pk=moderator_form_info['subreddit'])
+            # for sub in Subreddit.objects.all():
+            #     print(sub.moderators.all())
+            for current_moderator in subreddit_to_mod.moderators.all():
+                if new_moderator == current_moderator:
+                    return HttpResponse('This user is already a duplicate')
+            subreddit_to_mod.moderators.add(new_moderator)
+
+    else:
+
+        form = ModeratorForm(logged_in_profile)
+
+        return render(request, 'moderator_page.html', {'form': form})
+
+    return HttpResponse('thank you')
 
 
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect(reverse('frontpage'))
+
