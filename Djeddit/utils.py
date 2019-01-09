@@ -65,3 +65,8 @@ def get_user_votes(request, posts):
         elif p.votes.exists(request.user.id, action=1):
             user_downvotes.append(p.id)
     return (user_upvotes, user_downvotes)
+
+# def get_posts_in_order(newest=False):
+#     all_entries = Post.objects.all().order_by('-vote_score')
+
+#     return all_entries

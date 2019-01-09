@@ -55,6 +55,7 @@ def login_view(request):
 
 
 def front_page_view(request):
+    # all_entries = get_posts_in_order()
     all_entries = Post.objects.all().order_by('-vote_score')
     current_user = Profile.objects.get(user=request.user)
     user_post_upvotes, user_post_downvotes = (
