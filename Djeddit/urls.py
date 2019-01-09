@@ -36,8 +36,8 @@ urlpatterns = [
     path('unsubscribe/<slug:subreddit>/', views.unsubscription_view),
     path('ajax/vote/', views.ajax_vote),
     path('moderatoradd/', views.moderatoradd_view),
-    path('logout/', views.logout_user),
+    path('logout/', views.LogoutView.as_view()),
     path('bio/<slug:user>/', views.bio_view),
     path('p/<int:post>/delete/<int:comment>/', views.delete_comment_view),
-    path('subdelete/<int:subreddit>/', views.delete_sub_view),
+    path('subdelete/<int:subreddit>/', views.DeleteSubView.as_view()),
 ]

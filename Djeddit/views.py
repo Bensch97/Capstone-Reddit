@@ -247,7 +247,7 @@ def profile_view(request, author):
     year = int(cakeday_info[0])
     month = calendar.month_name[int(cakeday_info[1])]
     day = cakeday_info[2]
-    
+   
     if day[0] == 0:
         day = day[1:]
     cakeday = '{} {}, {}'.format(month, day, year)
@@ -331,12 +331,14 @@ def moderatoradd_view(request):
     return HttpResponse('thank you')
 
 
-def logout_user(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('frontpage'))
+class LogoutView(generic.View):
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse('frontpage'))
 
 
-def delete_sub_view(request, subreddit):
-    sub_to_delete = Subreddit.objects.get(pk=subreddit)
-    sub_to_delete.delete()
-    return HttpResponseRedirect('/')
+class DeleteSubView(generic.View):
+    def get(self, request, *args, **kwargs):
+        sub_to_delete = Subreddit.objects.get(pk=kwargs['subreddit'])
+        sub_to_delete.delete()
+        return HttpResponseRedirect('/')
