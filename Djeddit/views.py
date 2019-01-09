@@ -56,6 +56,7 @@ def login_view(request):
 
 def front_page_view(request):
     all_entries = Post.objects.all().order_by('-vote_score')
+    current_user = Profile.objects.get(user=request.user)
     user_post_upvotes, user_post_downvotes = (
         get_user_votes(request, all_entries)
     )
@@ -64,6 +65,7 @@ def front_page_view(request):
         'posts': all_entries,
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
+        'current_user': current_user
     }
     return render(request, 'front_page.html', data)
 
@@ -149,6 +151,15 @@ def delete_comment_view(request, post, comment):
     return HttpResponseRedirect('/p/{}/'.format(post))
 
 
+def delete_post_view(request, subreddit, post):
+    Post.objects.get(id=post).delete()
+    return HttpResponseRedirect('/r/{}/'.format(subreddit))
+
+def delete_individual_post_view(request, post):
+    Post.objects.get(id=post).delete()
+    return HttpResponseRedirect('/')
+
+
 def individual_post_view(request, post):
     current_user = Profile.objects.get(user=request.user)
     if request.method == 'POST':
@@ -217,7 +228,8 @@ def subreddit_view(request, subreddit):
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
         'subscriptions': subscriptions,
-        'is_creator': is_creator
+        'is_creator': is_creator,
+        'current_user': current_user
     }
 
     return render(request, html, data)

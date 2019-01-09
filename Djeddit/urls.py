@@ -39,5 +39,7 @@ urlpatterns = [
     path('logout/', views.logout_user),
     path('bio/<slug:user>/', views.bio_view),
     path('p/<int:post>/delete/<int:comment>/', views.delete_comment_view),
+    path('r/<slug:subreddit>/delete/<int:post>/', views.delete_post_view),
+    path('p/<int:post>/delete/', views.delete_individual_post_view),
     path('subdelete/<int:subreddit>/', views.delete_sub_view),
 ]
