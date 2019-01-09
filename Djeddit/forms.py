@@ -45,3 +45,6 @@ class ModeratorForm(forms.Form):
 
 class BioForm(forms.Form):
     bio = forms.CharField(widget=forms.Textarea)
+
+class ReplyForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea)
