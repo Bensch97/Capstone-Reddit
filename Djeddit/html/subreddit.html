@@ -24,10 +24,12 @@
                   <div class="title-post">
                       <h5 class='mb-1'><a href='/p/{{ post.id }}' class='text-dark'>{{ post.title }}</a></h5>
                       <p>{{ post }}</p>
+                      {% if current_user == post.profile_id %}
+                        <a class='text-muted' href='/r/{{ post.subreddit_id.name }}/delete/{{ post.id}}/'>Delete</a>
+                      {% endif %}
                   </div>
               </div>
           </div>   
-  
           </div>
         </div>
       </div>
