@@ -107,7 +107,7 @@ def bio_view(request, user):
 
 def post_view(request, subreddit=None):
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(None, request.POST)
         if form.is_valid():
             content = form.cleaned_data
             post_to_subreddit_id = content['subreddit']
@@ -137,6 +137,16 @@ def post_view(request, subreddit=None):
 def delete_comment_view(request, post, comment):
     Comment.objects.get(id=comment).delete()
     return HttpResponseRedirect('/p/{}/'.format(post))
+
+
+def delete_post_view(request, subreddit, post):
+    Post.objects.get(id=post).delete()
+    return HttpResponseRedirect('/r/{}/'.format(subreddit))
+
+def delete_individual_post_view(request, post):
+    print(post)
+    Post.objects.get(id=post).delete()
+    return HttpResponseRedirect('')
 
 
 def individual_post_view(request, post):
@@ -205,7 +215,8 @@ def subreddit_view(request, subreddit):
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
         'subscriptions': subscriptions,
-        'is_creator': is_creator
+        'is_creator': is_creator,
+        'current_user': current_user
     }
 
     return render(request, html, data)
