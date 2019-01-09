@@ -7,19 +7,17 @@ def handle_vote(request):
     """
     current_user_profile = Profile.objects.get(user__id=request.user.id)
     targeted_id = request.POST.get('post_id') or request.POST.get('comment_id')
-    if request.POST.get('comment_id'):
-        target_comment = Post.objects.filter(id=request.POST.get('comment_id'))
-    elif request.POST.get('post_id'):
-        target_post = Post.objects.filter(id=request.POST.get('post_id'))
+    print(targeted_id)
 
-  
     if request.POST.get('post_id'):
         targeted_post = Post.objects.get(id=targeted_id)
-        targeted_user_id = Post.objects.values_list('profile_id', flat=True).get(id=targeted_id)
+        targeted_user_id = Post.objects.values_list(
+            'profile_id', flat=True).get(id=targeted_id)
         targeted_user = Profile.objects.get(id=targeted_user_id)
     elif request.POST.get('comment_id'):
         targeted_post = Comment.objects.get(id=targeted_id)
-        targeted_user_id = Post.objects.values_list('profile_id', flat=True).get(id=targeted_id)
+        targeted_user_id = Post.objects.values_list(
+            'profile_id', flat=True).get(id=targeted_id)
         targeted_user = Profile.objects.get(id=targeted_user_id)
 
     if request.POST.get('upvote'):
@@ -65,8 +63,3 @@ def get_user_votes(request, posts):
         elif p.votes.exists(request.user.id, action=1):
             user_downvotes.append(p.id)
     return (user_upvotes, user_downvotes)
-
-# def get_posts_in_order(newest=False):
-#     all_entries = Post.objects.all().order_by('-vote_score')
-
-#     return all_entries
