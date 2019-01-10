@@ -64,8 +64,10 @@ def login_view(request):
 
 def front_page_view(request):
     try:
+        print('try works')
         form = OrderForm(request.COOKIES['order'])
         if request.COOKIES['order'] == 'best':
+            print('if its best')
             all_entries = Post.objects.all().order_by('-vote_score')
         else:
             all_entries = Post.objects.all().order_by('-timestamp')
@@ -380,8 +382,7 @@ def test_cookie(request):
     response = HttpResponseRedirect('/')
     if request.method == 'POST':
 
-        form = OrderForm(request.COOKIES['order'])
-        print(form)
+        form = OrderForm(request.COOKIES['order'], request.POST)
         if form.is_valid():
             order_form = form.cleaned_data
             if order_form['order'] == 'BEST':
