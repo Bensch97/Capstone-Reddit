@@ -46,3 +46,6 @@ urlpatterns = [
     path('testform/', views.test_cookie),
     path('p/<int:post>/reply/<int:comment>/', views.reply_view),
 ]
+
+handler404 = 'Djeddit.views.handler404'
+handler500 = 'Djeddit.views.handler500'
