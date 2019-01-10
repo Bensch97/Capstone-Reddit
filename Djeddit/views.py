@@ -3,7 +3,7 @@ import re
 import calendar
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpRequest
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
@@ -13,8 +13,10 @@ from django.core.mail import send_mail
 from django.views import generic
 from django.db import IntegrityError
 
+from Djeddit.models import Profile, Subreddit, Post, Comment, Reply
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm, ReplyForm
 from Djeddit.models import Profile, Subreddit, Post, Comment
-from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm, OrderForm
 from Djeddit.utils import handle_vote, get_user_votes
 
 
@@ -63,7 +65,18 @@ def login_view(request):
 
 
 def front_page_view(request):
-    all_entries = Post.objects.all().order_by('-vote_score')
+    try:
+        print('try works')
+        form = OrderForm(request.COOKIES['order'])
+        if request.COOKIES['order'] == 'best':
+            print('if its best')
+            all_entries = Post.objects.all().order_by('-vote_score')
+        else:
+            all_entries = Post.objects.all().order_by('-timestamp')
+    except KeyError:
+        form = OrderForm(None)
+        all_entries = Post.objects.all().order_by('-vote_score')
+
     current_user = Profile.objects.get(user=request.user)
     user_post_upvotes, user_post_downvotes = (
         get_user_votes(request, all_entries)
@@ -73,9 +86,12 @@ def front_page_view(request):
         'posts': all_entries,
         'user_post_upvotes': user_post_upvotes,
         'user_post_downvotes': user_post_downvotes,
-        'current_user': current_user
+        'current_user': current_user,
+        'form': form,
     }
-    return render(request, 'front_page.html', data)
+    response = render(request, 'front_page.html', data)
+    response.set_cookie('order', 'best')
+    return response
 
 
 @login_required
@@ -168,9 +184,28 @@ def delete_individual_post_view(request, post):
     return HttpResponseRedirect('/')
 
 
+def delete_reply_view(request, post, reply):
+    Reply.objects.get(id=reply).delete()
+    return HttpResponseRedirect('/p/{}/'.format(post))
+
+
+def reply_view(request, post, comment):
+    current_user = Profile.objects.get(user=request.user)
+    parent_comment = Comment.objects.get(id=comment)
+    form = ReplyForm(request.POST)
+    if form.is_valid():
+        reply= form.cleaned_data
+        Reply.objects.create(
+            content=reply['content'],
+            profile_id=current_user,
+            parent_id=parent_comment
+        )
+        return HttpResponseRedirect('/p/{}/'.format(post))
+
+
 def individual_post_view(request, post):
     current_user = Profile.objects.get(user=request.user)
-    if request.method == 'POST':
+    if request.method == 'POST' and 'comment' in request.POST:
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.cleaned_data
@@ -184,9 +219,11 @@ def individual_post_view(request, post):
 
     else:
         form = CommentForm
+        replyform = ReplyForm
         html = 'post.html'
         post_obj = Post.objects.filter(id=post).first()
         comments = Comment.objects.filter(post_id=post_obj)
+        replies = Reply.objects.all()
         user_post_upvotes, user_post_downvotes = get_user_votes(
             request,
             Post.objects.filter(id=post)
@@ -198,7 +235,9 @@ def individual_post_view(request, post):
         data = {
             'post': post_obj,
             'form': form,
+            'reply_form': replyform,
             'comments': comments,
+            'replies': replies,
             'user_post_upvotes': user_post_upvotes,
             'user_post_downvotes': user_post_downvotes,
             'user_comment_upvotes': user_comment_upvotes,
@@ -362,3 +401,18 @@ class DeleteSubView(generic.View):
         sub_to_delete = Subreddit.objects.get(pk=kwargs['subreddit'])
         sub_to_delete.delete()
         return HttpResponseRedirect('/')
+
+
+def test_cookie(request):
+    response = HttpResponseRedirect('/')
+    if request.method == 'POST':
+
+        form = OrderForm(request.COOKIES['order'], request.POST)
+        if form.is_valid():
+            order_form = form.cleaned_data
+            if order_form['order'] == 'BEST':
+                response.set_cookie('order', 'best')
+            if order_form['order'] == 'NEW':
+                response.set_cookie('order', 'new')
+    return response
+
