@@ -49,13 +49,7 @@ class BioForm(forms.Form):
 class OrderForm(forms.Form):
     def __init__(self, order_choice, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
-
-        if order_choice == 'best':
-            self.initial['order'] = 'New'
-        elif order_choice == 'new':
-            self.initial['order'] = 'New'
-        else:
-            self.initial['order'] = 'New'
+        self.initial['order'] = 'Best'
 
 
     ORDER_CHOICES = (
