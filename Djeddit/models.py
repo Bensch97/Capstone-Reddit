@@ -14,8 +14,10 @@ class Subreddit(models.Model):
         related_name='mod_subscriptions',
         blank=True
     )
+
     def __str__(self):
         return self.name
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -27,7 +29,6 @@ class Profile(models.Model):
         related_name='sub_subscriptions',
         blank=True
     )
-    
 
     def __str__(self):
         return self.user.username
