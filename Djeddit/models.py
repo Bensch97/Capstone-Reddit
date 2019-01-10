@@ -55,3 +55,13 @@ class Comment(VoteModel, models.Model):
 
     def __str__(self):
         return self.content
+
+
+class Reply(VoteModel, models.Model):
+    content = models.CharField(max_length=1000)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True)
+    profile_id = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    parent_id = models.ForeignKey(Comment, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content

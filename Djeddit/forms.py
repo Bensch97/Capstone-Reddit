@@ -46,6 +46,9 @@ class ModeratorForm(forms.Form):
 class BioForm(forms.Form):
     bio = forms.CharField(widget=forms.Textarea)
 
+class ReplyForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea)
+
 class OrderForm(forms.Form):
     def __init__(self, order_choice, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)

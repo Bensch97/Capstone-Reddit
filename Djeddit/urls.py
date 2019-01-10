@@ -42,5 +42,9 @@ urlpatterns = [
     path('subdelete/<int:subreddit>/', views.DeleteSubView.as_view()),
     path('r/<slug:subreddit>/delete/<int:post>/', views.delete_post_view),
     path('p/<int:post>/delete/', views.delete_individual_post_view),
+    path('subdelete/<int:subreddit>/', views.delete_sub_view),
+    path('p/<int:post>/reply/<int:comment>/', views.reply_view),
+    path('p/<int:post>/delete_reply/<int:reply>/', views.delete_reply_view)
     path('testform/', views.test_cookie),
+    path('p/<int:post>/reply/<int:comment>/', views.reply_view),
 ]

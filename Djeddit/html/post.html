@@ -22,7 +22,7 @@
         <label for="post-title">Post Title:</label>
         <label for="exampleTextarea">Post Comment:</label> {% csrf_token %}
         {{ form.as_p }}
-        <input class="btn btn-primary mt-1" type="submit" value="Post" />
+        <input class="btn btn-primary mt-1" type="submit" value="Post" name='comment'/>
       </div>
     </form>
     <div class="list-group">
@@ -40,10 +40,33 @@
           <a href='/p/{{ post.id }}/delete/{{ comment.id }}/'>Delete</a>
         {% endif %}
       </div>
+        <button class='btn btn-primary text-white' type='button' data-toggle='collapse' data-target='#collapseReply{{ comment.id }}'>Reply</button>
+      <div id='collapseReply{{ comment.id }}' class='collapse'>
+        <div>
+          <form class='mt-1' action='/p/{{ post.id }}/reply/{{ comment.id }}/' method='post'>
+          {% csrf_token %}
+          {{ reply_form.as_p }}
+          <input class='btn btn-primary ml-5' type='submit' value='Post' name='reply'>
+          </form>
+        </div>
+    </div>
+    <div class='list-group'>
+      {% for reply in replies %}
+        {% if reply.parent_id == comment %}
+        <div class='list-group-item list-group-item-action flex-column align-items-start my-1 ml-2'>
+            <p><a href='/u/{{ reply.profile_id }}/'>u/{{ reply.profile_id }}</a> - {{ reply.timestamp }}</p>
+            <div class='ml-4'>
+              {{ reply }}
+            </div>
+            {% if current_user == reply.profile_id %}
+          <a href='/p/{{ post.id }}/delete_reply/{{ reply.id }}/'>Delete</a>
+        {% endif %}
+        </div>
+        {% endif %}
       {% endfor %}
     </div>
-
-{% endblock %}
-{% block javascript %}
+      {% endfor %}
+  {% endblock %}
+  {% block javascript %}
 {% include "jquery.html" %}
 {% endblock %}

@@ -13,6 +13,8 @@ from django.core.mail import send_mail
 from django.views import generic
 from django.db import IntegrityError
 
+from Djeddit.models import Profile, Subreddit, Post, Comment, Reply
+from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm, ReplyForm
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm, OrderForm
 from Djeddit.utils import handle_vote, get_user_votes
@@ -182,9 +184,28 @@ def delete_individual_post_view(request, post):
     return HttpResponseRedirect('/')
 
 
+def delete_reply_view(request, post, reply):
+    Reply.objects.get(id=reply).delete()
+    return HttpResponseRedirect('/p/{}/'.format(post))
+
+
+def reply_view(request, post, comment):
+    current_user = Profile.objects.get(user=request.user)
+    parent_comment = Comment.objects.get(id=comment)
+    form = ReplyForm(request.POST)
+    if form.is_valid():
+        reply= form.cleaned_data
+        Reply.objects.create(
+            content=reply['content'],
+            profile_id=current_user,
+            parent_id=parent_comment
+        )
+        return HttpResponseRedirect('/p/{}/'.format(post))
+
+
 def individual_post_view(request, post):
     current_user = Profile.objects.get(user=request.user)
-    if request.method == 'POST':
+    if request.method == 'POST' and 'comment' in request.POST:
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.cleaned_data
@@ -198,9 +219,11 @@ def individual_post_view(request, post):
 
     else:
         form = CommentForm
+        replyform = ReplyForm
         html = 'post.html'
         post_obj = Post.objects.filter(id=post).first()
         comments = Comment.objects.filter(post_id=post_obj)
+        replies = Reply.objects.all()
         user_post_upvotes, user_post_downvotes = get_user_votes(
             request,
             Post.objects.filter(id=post)
@@ -212,7 +235,9 @@ def individual_post_view(request, post):
         data = {
             'post': post_obj,
             'form': form,
+            'reply_form': replyform,
             'comments': comments,
+            'replies': replies,
             'user_post_upvotes': user_post_upvotes,
             'user_post_downvotes': user_post_downvotes,
             'user_comment_upvotes': user_comment_upvotes,
