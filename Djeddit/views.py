@@ -2,7 +2,7 @@ import datetime
 import re
 import calendar
 
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpRequest
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -13,11 +13,27 @@ from django.core.mail import send_mail
 from django.views import generic
 from django.db import IntegrityError
 
+
 from Djeddit.models import Profile, Subreddit, Post, Comment, Reply
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm, ReplyForm
 from Djeddit.models import Profile, Subreddit, Post, Comment
 from Djeddit.forms import SignupForm, LoginForm, SubredditForm, PostForm, CommentForm, ModeratorForm, BioForm, OrderForm
 from Djeddit.utils import handle_vote, get_user_votes
+from django.template import RequestContext
+
+
+def handler404(request, *args, **argv):
+    response = render_to_response('404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+
+def handler500(request, *args, **argv):
+    response = render_to_response('500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
 
 
 def signup_view(request):
