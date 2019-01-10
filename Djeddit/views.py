@@ -63,11 +63,15 @@ def login_view(request):
 
 
 def front_page_view(request):
-    form = OrderForm()
-    if request.COOKIES['order'] == 'best':
+    try:
+        form = OrderForm(request.COOKIES['order'])
+        if request.COOKIES['order'] == 'best':
+            all_entries = Post.objects.all().order_by('-vote_score')
+        else:
+            all_entries = Post.objects.all().order_by('-timestamp')
+    except KeyError:
+        form = OrderForm(None)
         all_entries = Post.objects.all().order_by('-vote_score')
-    else:
-        all_entries = Post.objects.all().order_by('-timestamp')
 
     current_user = Profile.objects.get(user=request.user)
     user_post_upvotes, user_post_downvotes = (
@@ -372,10 +376,10 @@ class DeleteSubView(generic.View):
 
 
 def test_cookie(request):
-    
     response = HttpResponseRedirect('/')
     if request.method == 'POST':
-        form = OrderForm(request.POST)
+        form = OrderForm(request.COOKIES['order'], request.POST)
+        
         if form.is_valid():
             order_form = form.cleaned_data
             if order_form['order'] == 'BEST':
