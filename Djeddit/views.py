@@ -85,8 +85,9 @@ def front_page_view(request):
         'current_user': current_user,
         'form': form,
     }
-
-    return render(request, 'front_page.html', data)
+    response = render(request, 'front_page.html', data)
+    response.set_cookie('order', 'best')
+    return response
 
 
 @login_required
@@ -378,8 +379,9 @@ class DeleteSubView(generic.View):
 def test_cookie(request):
     response = HttpResponseRedirect('/')
     if request.method == 'POST':
-        form = OrderForm(request.COOKIES['order'], request.POST)
-        
+
+        form = OrderForm(request.COOKIES['order'])
+        print(form)
         if form.is_valid():
             order_form = form.cleaned_data
             if order_form['order'] == 'BEST':
