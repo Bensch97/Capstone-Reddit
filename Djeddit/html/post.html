@@ -7,19 +7,27 @@
 {% block content %}
     <div class="row">
       <div class="col">
-        <h2 class="mt-3 ml-2">{{ post.content }}</h2>
-        {% include "vote.html" %}
+        <h2 class="mt-3 ml-2">{{ post.title }}</h2>
+        <div class='row justify-content-start'>
+        <div class='col-1'>
+          {% include "vote.html" %}
+        </div>
+        <div class='col-10'>
+          {{ post.content }}
+        </div>
+      </div>
         <p class="ml-2">
           Posted to r/{{ post.subreddit_id }} by
           <a href="/u/{{ post.profile_id }}">{{ post.profile_id }}</a> at
           {{ post.timestamp }}
+          {% if current_user == post.profile_id %}
           <a href='/p/{{ post.id }}/delete/'>Delete</a>
+          {% endif %}
         </p>
       </div>
     </div>
     <form action="/p/{{ post.id }}/" method="post">
       <div class="form-group mx-3">
-        <label for="post-title">Post Title:</label>
         <label for="exampleTextarea">Post Comment:</label> {% csrf_token %}
         {{ form.as_p }}
         <input class="btn btn-primary mt-1" type="submit" value="Post" name='comment'/>
@@ -34,8 +42,14 @@
           <a href="/u/{{ comment.profile_id }}/">{{ comment.profile_id }}</a> -
           {{ comment.timestamp }}
         </p>
-        <p class="ml-4">{{ comment.content }}</p>
-        {% include "vote_comment.html" %}
+        <div class='row'>
+          <div class='col-1'>
+            {% include "vote_comment.html" %}
+          </div>
+          <div class='col-10'>
+            <p class="ml-4">{{ comment.content }}</p>
+          </div>
+        </div>
         {% if current_user == comment.profile_id %}
           <a href='/p/{{ post.id }}/delete/{{ comment.id }}/'>Delete</a>
         {% endif %}
