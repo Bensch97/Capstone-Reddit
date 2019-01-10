@@ -43,5 +43,5 @@ urlpatterns = [
     path('p/<int:post>/delete/', views.delete_individual_post_view),
     path('subdelete/<int:subreddit>/', views.delete_sub_view),
     path('p/<int:post>/reply/<int:comment>/', views.reply_view),
-    path('p/<int:post>/delete/<int:reply>/', views.delete_reply_view)
+    path('p/<int:post>/delete_reply/<int:reply>/', views.delete_reply_view)
 ]

@@ -59,7 +59,7 @@
               {{ reply }}
             </div>
             {% if current_user == reply.profile_id %}
-          <a href='/p/{{ post.id }}/delete/{{ reply.id }}/'>Delete</a>
+          <a href='/p/{{ post.id }}/delete_reply/{{ reply.id }}/'>Delete</a>
         {% endif %}
         </div>
         {% endif %}
