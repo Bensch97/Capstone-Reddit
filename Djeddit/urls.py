@@ -46,4 +46,5 @@ urlpatterns = [
     path('p/<int:post>/reply/<int:comment>/', views.reply_view),
     path('p/<int:post>/delete_reply/<int:reply>/', views.delete_reply_view)
     path('testform/', views.test_cookie),
+    path('p/<int:post>/reply/<int:comment>/', views.reply_view),
 ]
