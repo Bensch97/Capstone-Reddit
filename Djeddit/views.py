@@ -94,7 +94,7 @@ def create_subreddit_view(request):
                 )
                 new_subreddit_instance.moderators.add(current_user)
 
-                return HttpResponse('Successfully created a subreddit')
+                return HttpResponseRedirect('/r/{}/'.format(new_subreddit_instance))
         else:
             form = SubredditForm()
 
