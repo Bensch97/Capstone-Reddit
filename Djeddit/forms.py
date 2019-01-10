@@ -45,3 +45,14 @@ class ModeratorForm(forms.Form):
 
 class BioForm(forms.Form):
     bio = forms.CharField(widget=forms.Textarea)
+
+class OrderForm(forms.Form):
+    ORDER_CHOICES = (
+        ('BEST', 'Best'),
+        ('NEW', 'New'),
+    )
+
+    order = forms.ChoiceField(choices=ORDER_CHOICES, label="", 
+                              initial={'BEST', 'Best'},
+                              widget=forms.Select(), 
+                              required=True)
