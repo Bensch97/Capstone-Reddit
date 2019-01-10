@@ -34,7 +34,7 @@ def signup_view(request):
                 'Please choose a different name.'
                 '<br/> <br/>'
                 '<button onClick="window.history.back()">Get Back</button>'
-                )
+            )
         Profile.objects.create(
             user=user,
             username=data['username'],
@@ -64,7 +64,8 @@ def login_view(request):
 
 def front_page_view(request):
     all_entries = Post.objects.all().order_by('-vote_score')
-    current_user = Profile.objects.get(user=request.user)
+    current_user = (Profile.objects.get(user=request.user)
+                    if request.user.is_authenticated else None)
     user_post_upvotes, user_post_downvotes = (
         get_user_votes(request, all_entries)
     )
@@ -104,6 +105,7 @@ def create_subreddit_view(request):
         error_message = 'Subreddit has already been created'
         return HttpResponse(error_message)
 
+
 def thanks_view(request):
     return HttpResponse('Thanks')
 
@@ -121,7 +123,7 @@ def bio_view(request, user):
             return HttpResponseRedirect('/u/{}/'.format(current_user.username))
     else:
         form = BioForm()
-    
+
     return render(request, html, {'form': form, 'user': current_user})
 
 
@@ -162,6 +164,7 @@ def delete_comment_view(request, post, comment):
 def delete_post_view(request, subreddit, post):
     Post.objects.get(id=post).delete()
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
+
 
 def delete_individual_post_view(request, post):
     Post.objects.get(id=post).delete()
@@ -247,7 +250,7 @@ def subscription_view(request, subreddit):
     current_user = Profile.objects.get(user=request.user)
     sub = Subreddit.objects.get(name=subreddit)
     current_user.subscriptions.add(sub)
-    
+
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
 
@@ -255,7 +258,7 @@ def unsubscription_view(request, subreddit):
     current_user = Profile.objects.get(user=request.user)
     sub = Subreddit.objects.get(name=subreddit)
     current_user.subscriptions.remove(sub)
-    
+
     return HttpResponseRedirect('/r/{}/'.format(subreddit))
 
 
@@ -267,7 +270,7 @@ def profile_view(request, author):
     year = int(cakeday_info[0])
     month = calendar.month_name[int(cakeday_info[1])]
     day = cakeday_info[2]
-   
+
     if day[0] == 0:
         day = day[1:]
     cakeday = '{} {}, {}'.format(month, day, year)
@@ -281,7 +284,7 @@ def profile_view(request, author):
         comments = None
         user_post_upvotes = None
         user_post_downvotes = None
-        
+
         return HttpResponse('u/{} does not exist yet'.format(author))
 
     data = {
