@@ -5,6 +5,11 @@
 {% endblock %}
 
 {% block content %}
+<form action="/testform/" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input class="btn btn-primary mt-1" type="submit" value="Post" />
+</form>
 <div class='row'>
     <div class='col-11 col-md-8'>
         {% for post in posts %}
