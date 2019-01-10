@@ -7,7 +7,6 @@ def handle_vote(request):
     """
     current_user_profile = Profile.objects.get(user__id=request.user.id)
     targeted_id = request.POST.get('post_id') or request.POST.get('comment_id')
-    print(targeted_id)
 
     if request.POST.get('post_id'):
         targeted_post = Post.objects.get(id=targeted_id)
