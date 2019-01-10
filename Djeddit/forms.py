@@ -48,3 +48,18 @@ class BioForm(forms.Form):
 
 class ReplyForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea)
+
+class OrderForm(forms.Form):
+    def __init__(self, order_choice, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+        self.initial['order'] = 'Best'
+
+
+    ORDER_CHOICES = (
+        ('BEST', 'Best'),
+        ('NEW', 'New'),
+    )
+
+    order = forms.ChoiceField(choices=ORDER_CHOICES, label="",
+                              widget=forms.Select(), 
+                              required=True)

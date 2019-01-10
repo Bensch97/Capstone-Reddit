@@ -7,19 +7,16 @@ def handle_vote(request):
     """
     current_user_profile = Profile.objects.get(user__id=request.user.id)
     targeted_id = request.POST.get('post_id') or request.POST.get('comment_id')
-    if request.POST.get('comment_id'):
-        target_comment = Post.objects.filter(id=request.POST.get('comment_id'))
-    elif request.POST.get('post_id'):
-        target_post = Post.objects.filter(id=request.POST.get('post_id'))
 
-  
     if request.POST.get('post_id'):
         targeted_post = Post.objects.get(id=targeted_id)
-        targeted_user_id = Post.objects.values_list('profile_id', flat=True).get(id=targeted_id)
+        targeted_user_id = Post.objects.values_list(
+            'profile_id', flat=True).get(id=targeted_id)
         targeted_user = Profile.objects.get(id=targeted_user_id)
     elif request.POST.get('comment_id'):
         targeted_post = Comment.objects.get(id=targeted_id)
-        targeted_user_id = Post.objects.values_list('profile_id', flat=True).get(id=targeted_id)
+        targeted_user_id = Post.objects.values_list(
+            'profile_id', flat=True).get(id=targeted_id)
         targeted_user = Profile.objects.get(id=targeted_user_id)
 
     if request.POST.get('upvote'):
