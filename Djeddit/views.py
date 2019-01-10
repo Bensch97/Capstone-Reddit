@@ -160,6 +160,11 @@ def delete_individual_post_view(request, post):
     return HttpResponseRedirect('/')
 
 
+def delete_reply_view(request, post, reply):
+    Reply.objects.get(id=reply).delete()
+    return HttpResponseRedirect('/p/{}/'.format(post))
+
+
 def reply_view(request, post, comment):
     current_user = Profile.objects.get(user=request.user)
     parent_comment = Comment.objects.get(id=comment)

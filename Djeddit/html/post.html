@@ -50,10 +50,18 @@
           </form>
         </div>
     </div>
-    <div>
+    <div class='list-group'>
       {% for reply in replies %}
         {% if reply.parent_id == comment %}
-          {{ reply }}
+        <div class='list-group-item list-group-item-action flex-column align-items-start my-1 ml-2'>
+            <p><a href='/u/{{ reply.profile_id }}/'>u/{{ reply.profile_id }}</a> - {{ reply.timestamp }}</p>
+            <div class='ml-4'>
+              {{ reply }}
+            </div>
+            {% if current_user == reply.profile_id %}
+          <a href='/p/{{ post.id }}/delete/{{ reply.id }}/'>Delete</a>
+        {% endif %}
+        </div>
         {% endif %}
       {% endfor %}
     </div>
