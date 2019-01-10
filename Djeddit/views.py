@@ -40,6 +40,7 @@ def signup_view(request):
         Profile.objects.create(
             user=user,
             username=data['username'],
+            email=data['email'],
             karma=0
         )
         send_mail('Thanks for creating your account!',
@@ -110,7 +111,7 @@ def create_subreddit_view(request):
                 )
                 new_subreddit_instance.moderators.add(current_user)
 
-                return HttpResponse('Successfully created a subreddit')
+                return HttpResponseRedirect('/r/{}/'.format(new_subreddit_instance))
         else:
             form = SubredditForm()
 

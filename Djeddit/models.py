@@ -22,6 +22,7 @@ class Subreddit(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=30)
+    email = models.EmailField(max_length=70, blank=True, null=True, unique=True)
     bio = models.CharField(max_length=300)
     karma = models.IntegerField()
     subscriptions = models.ManyToManyField(
