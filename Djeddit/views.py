@@ -40,6 +40,7 @@ def signup_view(request):
         Profile.objects.create(
             user=user,
             username=data['username'],
+            email=data['email'],
             karma=0
         )
         send_mail('Thanks for creating your account!',
