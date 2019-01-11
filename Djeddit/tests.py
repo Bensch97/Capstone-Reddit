@@ -7,7 +7,6 @@ from Djeddit.utils import handle_vote, get_user_votes
 
 class HelperTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
             username='test', email='test@test.com', password='test')
@@ -31,6 +30,13 @@ class HelperTestCase(TestCase):
             profile_id=models.Profile.objects.get(user=self.user),
             subreddit_id=models.Subreddit.objects.get(pk=1),
         )
+        models.Post.objects.create(
+            title='TEST_TITLE_2',
+            content='TEST_CONTENT_2',
+            vote_count=0,
+            profile_id=models.Profile.objects.get(user=self.user),
+            subreddit_id=models.Subreddit.objects.get(pk=1),
+        )
 
     def test_get_user_votes(self):
         posts = models.Post.objects.all()
@@ -39,8 +45,17 @@ class HelperTestCase(TestCase):
         self.assertEqual(get_user_votes(request, posts), ([], []))
 
     def test_handle_vote_upvote(self):
-        data = {'upvote': 'upvote', 'post_id': '1'}
+        data = {'upvote': 'upvote', 'post_id': 1}
         request = self.factory.post('/', data)
         request.user = self.user
+        handle_vote(request)
         p = models.Post.objects.get(pk=data['post_id'])
         self.assertEqual(p.votes.exists(request.user.id, action=0), True)
+
+    def test_handle_vote_downvote(self):
+        data = {'downvote': 'downvote', 'post_id': 2}
+        request = self.factory.post('/', data)
+        request.user = self.user
+        handle_vote(request)
+        p = models.Post.objects.get(pk=data['post_id'])
+        self.assertEqual(p.votes.exists(request.user.id, action=1), True)
