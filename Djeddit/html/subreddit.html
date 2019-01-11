@@ -43,13 +43,18 @@
         <p class="text-left">{{ subreddit.description }}</p>
       </div>
       <a class="btn btn-primary ml-1 my-1 w-100" href="/post/{{ subreddit.name }}">Create Post</a>
+      <br>
       {% if subreddit not in subscriptions %}
+        
         <a class='btn btn-primary ml-1 my-1 w-100' href='/subscribe/{{ subreddit.name }}/'>Subscribe</a>
       {% endif %}
+
       {% if subreddit in subscriptions %}
+        <br>
         <a class='btn btn-primary ml-1 my-1 w-100' href='/unsubscribe/{{ subreddit.name }}/'>Unsubscribe</a>
       {% endif %}
       {% if is_creator %}
+        <br>
         <a class='btn btn-primary ml-1 my-1 w-100' href='/moderatoradd/'>Add Moderator</a>
       {% endif %}  
     </div>
