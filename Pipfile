@@ -13,6 +13,8 @@ django-heroku = "*"
 dj-database-url = "*"
 python-dotenv = "*"
 django-vote = "*"
+boto3 = "*"
+django-storages = "*"
 
 [requires]
 python_version = "3.7.1"
