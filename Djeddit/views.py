@@ -208,7 +208,8 @@ def reply_view(request, post, comment):
 
 
 def individual_post_view(request, post):
-    current_user = Profile.objects.get(user=request.user)
+    current_user = (Profile.objects.get(user=request.user)
+                    if request.user.is_authenticated else None)
     if request.method == 'POST' and 'comment' in request.POST:
         form = CommentForm(request.POST)
         if form.is_valid():

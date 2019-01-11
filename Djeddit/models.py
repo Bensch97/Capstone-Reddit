@@ -42,6 +42,7 @@ class Post(VoteModel, models.Model):
     vote_count = models.IntegerField()
     profile_id = models.ForeignKey(Profile, on_delete=models.CASCADE)
     subreddit_id = models.ForeignKey(Subreddit, on_delete=models.CASCADE)
+    url = models.URLField(max_length=200, blank=True)
 
     def __str__(self):
         return self.content
