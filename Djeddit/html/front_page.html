@@ -42,7 +42,7 @@
         {% endfor %}
     </div>
     <div class='col-6 col-md-4 mt-1 pt-5 pb-3 bg-white text-right border rounded h-100'>
-        <h4 class='text-center'>R/Popular</h4>
+        <h4 class='text-center'>r/popular</h4>
         <div>
             <p class='text-left'>The best posts on Reddit for you, organized by subreddits you follow and enjoy.
                 Check to see the most popular posts, comments and organizations on the internet.
@@ -51,8 +51,9 @@
         <a class='btn btn-primary mr-1 w-100' href='/post/'>Create Post</a>
         <br>
         <a class='btn btn-primary mr-1 w-100' href='/explore/'>Explore</a>
-        <br>
+
         {% if request.user.is_authenticated %}
+        <br>
         <a class='btn btn-primary mr-1 w-100' href='/create_subreddit/'>Create new subreddit</a>
         {% endif %}
     </div>
