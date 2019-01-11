@@ -5,11 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<form action="/testform/" method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input class="btn btn-primary mt-1" type="submit" value="Post" />
-</form>
+<div id="order-form">
+    <form action="/testform/" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input class="btn btn-sm btn-primary mt-1" type="submit" value="Sort" />
+    </form>
+</div>
 <div class='row'>
     <div class='col-11 col-md-8'>
         {% for post in posts %}
@@ -39,13 +41,19 @@
               </div>
         {% endfor %}
     </div>
-    <div class='col-6 col-md-4 pt-5 text-right'>
-        <a class='btn btn-primary mr-1 my-1' href='/post/'>Create Post</a>
+    <div class='col-6 col-md-4 mt-1 pt-5 pb-3 bg-white text-right border rounded h-100'>
+        <h4 class='text-center'>R/Popular</h4>
+        <div>
+            <p class='text-left'>The best posts on Reddit for you, organized by subreddits you follow and enjoy.
+                Check to see the most popular posts, comments and organizations on the internet.
+            </p>
+        </div>
+        <a class='btn btn-primary mr-1 w-100' href='/post/'>Create Post</a>
         <br>
-        <a class='btn btn-primary mr-1 my-1' href='/explore/'>Explore</a>
+        <a class='btn btn-primary mr-1 w-100' href='/explore/'>Explore</a>
         <br>
         {% if request.user.is_authenticated %}
-        <a class='btn btn-primary mr-1 my-1' href='/create_subreddit/'>Create new subreddit</a>
+        <a class='btn btn-primary mr-1 w-100' href='/create_subreddit/'>Create new subreddit</a>
         {% endif %}
     </div>
 </div>
