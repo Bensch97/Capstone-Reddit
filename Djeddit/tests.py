@@ -38,8 +38,9 @@ class HelperTestCase(TestCase):
         request.user = self.user
         self.assertEqual(get_user_votes(request, posts), ([], []))
 
-    def test_handle_vote(self):
+    def test_handle_vote_upvote(self):
         data = {'upvote': 'upvote', 'post_id': '1'}
         request = self.factory.post('/', data)
         request.user = self.user
-        self.assertEqual(handle_vote(request), 'foo')
+        p = models.Post.objects.get(pk=data['post_id'])
+        self.assertEqual(p.votes.exists(request.user.id, action=0), True)
