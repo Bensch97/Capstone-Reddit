@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import django_heroku
 import dj_database_url
+import sys
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
@@ -144,6 +145,9 @@ django_heroku.settings(locals())
 
 DATABASES['default'] = dj_database_url.config(
     default=DATABASE_URL, conn_max_age=600, ssl_require=True)
+
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
 
 # AWS Configurations
 # https://simpleisbetterthancomplex.com/tutorial/2017/08/01/how-to-setup-amazon-s3-in-a-django-project.html#mixing-public-assets-and-private-assets
